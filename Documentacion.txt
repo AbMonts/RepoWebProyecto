@@ -1,0 +1,57 @@
+tareas
+-id
+-titulo
+-contenido
+-idusuario
+-fechaFin
+-fechainicio
+-isDone  -- para el check
+-compartidoCon --se pueda compatir
+-is
+
+
+usuarios
+-id
+-nombre
+-apellido1
+-apellido2
+-correo
+-contrasena
+-rol -- hay usuario, admins
+-isEnabled  --para habilitar o deshabilitar usuarios
+
+
+
+notas
+-id
+-titulo
+-contenido
+-idUsuario
+
+eventos
+-titulo
+-descripcion
+-fechainicio
+-fechafin
+-idusuario
+
+
+-----------------------------------
+
+
+---------------Falta------------
+--- mejorar la vista de las tareas y la barra publica y privada.
+
+
+--- que en home se vea un cuadro de titulo eventos tipo card.
+
+
+--- que en menu publico se desplieque un cuadro que lleve todo el ancho y se pueda guardar informacion
+
+
+-- validaciones en editar usuario y agregar Tambien
+
+--------------- Funcioenes base ---------------------: 
+Tareas: REcordatorios en home, ordenar prioridad(por fecha)
+
+Notas: importacion de archive y que pregunte el nombre.

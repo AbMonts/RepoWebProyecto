@@ -1,0 +1,136 @@
+:root{
+    --fondo:#6e9ed4 ;
+    --fondo-resalte:#297fc1;
+    --fondo-resalte2:#30bbe1;
+}
+.bg-pink{
+    background-color:var(--fondo);
+}
+.valido {
+    border-color: green;
+  }
+  
+  .novalido {
+    border-color: red;
+  }
+
+nav .form-control{
+    border-radius: 0;
+    border:none;
+    border-bottom: 5px solid var(--fondo-resalte);
+}
+
+nav .dropdown-item:hover {
+    color: white;
+    background-color: var(--fondo-resalte);
+}
+
+.nav-link:hover {
+    color: white;
+}
+
+#carouselExampleAutoplaying{
+    height: calc(100vh - 3rem);
+}
+
+#carouselExampleAutoplaying img{
+    height: calc(100vh - 3rem);
+}
+
+.btn-pink{
+    background-color: var(--fondo-resalte);
+    color: white;
+}
+
+.btn-pink:hover{
+    background-color: var(--fondo-resalte2);
+    color: white;
+}
+
+.featurette-divider{
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+main{
+    min-height: calc(100vh - 11rem);
+}
+
+footer{
+    border-top: 5px solid var(--fondo);
+}
+
+
+form > div > div:not(.input-group){
+    display: none;
+    color: red;
+}
+
+form.validado input:valid, .valido{
+    border: 1px solid green !important;
+}
+
+form.validado input:invalid ~ div, 
+form div .novalido ~ div,
+form.validado .input-group:has(input:invalid) ~ div, 
+form div div.input-group:has(.novalido) ~ div{
+    display: block;
+}
+
+form.validado input:invalid, .novalido{
+    border: 1px solid red !important;
+
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+.container {
+    margin-top: 20px;
+}
+.search-bar form {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+.tasks-container {
+    background-color: #8FBC8F;
+    height: 300px;
+    margin-bottom: 20px;
+    padding: 20px;
+    overflow-y: auto;
+}
+.button-group {
+    display: flex;
+    justify-content: space-between;
+}
+.card {
+    margin: 0 auto !important;
+    height: 100% !important;
+}
+
+
+.card-header {
+    text-align: center !important;
+    font-size: larger !important;
+    font-weight: bold !important;
+}
+
+.barras{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.targetasInfo{
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+
+.card-item{
+    width: 70% !important;
+    height: auto !important;
+  }
