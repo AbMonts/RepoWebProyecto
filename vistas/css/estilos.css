@@ -1,0 +1,136 @@
+:root{
+    --fondo:#2c3e50; /* Fondo oscuro */
+    --fondo-resalte:#1a252f; /* Fondo resalte oscuro */
+    --fondo-resalte2:#34495e; /* Fondo resalte2 oscuro */
+}
+
+.bg-pink{
+    background-color:var(--fondo);
+}
+
+nav .form-control{
+    border-radius: 0;
+    border:none;
+    border-bottom: 5px solid var(--fondo-resalte);
+}
+
+nav .dropdown-item:hover {
+    color: white;
+    background-color: var(--fondo-resalte);
+}
+
+.nav-link:hover {
+    color: white;
+}
+
+#carouselExampleAutoplaying{
+    height: calc(100vh - 3rem);
+}
+
+#carouselExampleAutoplaying img{
+    height: calc(100vh - 3rem);
+}
+
+.btn-pink{
+    background-color: var(--fondo-resalte) !important;
+    color: white !important;
+}
+
+.btn-pink:hover{
+    background-color: var(--fondo-resalte2) !important;
+    color: white !important;
+}
+
+.featurette-divider{
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+main{
+    min-height: calc(100vh - 11rem);
+}
+
+footer{
+    border-top: 5px solid var(--fondo);
+}
+
+form > div > div:not(.input-group){
+    display: none;
+    color: red;
+}
+
+form.validado input:valid, .valido{
+    border: 1px solid green !important;
+}
+
+form.validado input:invalid ~ div, 
+form div .novalido ~ div,
+form.validado .input-group:has(input:invalid) ~ div, 
+form div div.input-group:has(.novalido) ~ div{
+    display: block;
+}
+
+form.validado input:invalid, .novalido{
+    border: 1px solid red !important;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1c1c1c; /* Fondo oscuro para el cuerpo */
+    color: #ecf0f1; /* Texto claro */
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.search-bar form {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.tasks-container {
+    background-color: #34495e; /* Fondo oscuro para tasks-container */
+    height: 300px;
+    margin-bottom: 20px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card {
+    margin: 0 auto !important;
+    height: 100% !important;
+    background-color: #2c3e50; /* Fondo oscuro para las tarjetas */
+    color: #ecf0f1; /* Texto claro para las tarjetas */
+}
+
+.card-header {
+    text-align: center !important;
+    font-size: larger !important;
+    font-weight: bold !important;
+    background-color: #1a252f; /* Fondo oscuro para el encabezado de la tarjeta */
+    color: #ecf0f1; /* Texto claro para el encabezado */
+}
+
+.barras{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.targetasInfo{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.card .item{
+    flex-grow: 7 !important; /* default 0 */
+    width: 70%;
+}
