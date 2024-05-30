@@ -139,8 +139,6 @@ class DAOUsuario
             $obj->nombre = $fila->nombre;
             $obj->apellido1 = $fila->apellido1;
             $obj->apellido2 = $fila->apellido2;
-            $obj->correo = $fila->correo;
-            $obj->telefono = $fila->telefono;
             $obj->rol = $fila->rol;
            
             return $obj;
