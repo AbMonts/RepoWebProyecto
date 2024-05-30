@@ -28,6 +28,12 @@
     .card:hover {
       transform: translateY(90px);
     }
+    .toast-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
   </style>
 </head>
 <body>
@@ -55,29 +61,28 @@
 
 
     <div class="card-container">
-  <a href="Notas.php" class="card">
-    <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Notas</h5>
-      <p class="card-text">Puedes crear tus propias notas.</p>
+      <a href="Notas.php" class="card">
+        <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Notas</h5>
+          <p class="card-text">Puedes crear tus propias notas.</p>
+        </div>
+      </a>
+      <a href="Tareas.php" class="card">
+        <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Tareas</h5>
+          <p class="card-text">Haz un listado de tareas, y agendalas.</p>
+        </div>
+      </a>
+      <a href="#" class="card">
+        <img src="imgs/gestion.webp" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Eventos</h5>
+          <p class="card-text">Agenda próximos eventos.</p>
+        </div>
+      </a>
     </div>
-  </a>
-  <a href="Tareas.php" class="card">
-    <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Tareas</h5>
-      <p class="card-text">Haz un listado de tareas, y agendalas.</p>
-    </div>
-  </a>
-  <a href="#" class="card">
-    <img src="imgs/gestion.webp" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Eventos</h5>
-      <p class="card-text">Agenda próximos eventos.</p>
-    </div>
-  </a>
-</div>
-
 
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
       <?php
@@ -87,11 +92,11 @@
       $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
       ?>
       <div class="container mt-5">
-        <div class="card card-item">
+        <div class="card card-item" id="cardEvents">
           <div class="card-header">
             Eventos de este Mes
           </div>
-          <div class="card-body">
+          <div class="card-body toast-container">
             <?php foreach ($eventos as $evento): ?>
             <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="toast-header">
@@ -128,11 +133,11 @@
                       </div>
                       <div class="mb-3">
                         <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                        <input type="datetime-local" class="form-control" id="fechaInicio" name="fechaInicio" value="<?php echo htmlspecialchars($evento->fechaInicio); ?>">
+                        <input type="datetime-local" class="form-control" id="fechaInicio" name="fechaInicio" value="<?php echo htmlspecialchars($evento->fechainicio); ?>">
                       </div>
                       <div class="mb-3">
                         <label for="fechaFin" class="form-label">Fecha Fin</label>
-                        <input type="datetime-local" class="form-control" id="fechaFin" name="fechaFin" value="<?php echo htmlspecialchars($evento->fechaFin); ?>">
+                        <input type="datetime-local" class="form-control" id="fechaFin" name="fechaFin" value="<?php echo htmlspecialchars($evento->fechafin); ?>">
                       </div>
                       <button type="submit" class="btn btn-primary">Guardar</button>
                     </form>

@@ -48,11 +48,11 @@ class DAOUsuario
                     $obj->apellido2 = $fila->apellido2;
                     $obj->rol = $fila->rol;
     
-                    var_dump('cuando entro al if: ', $obj);
+                   // var_dump('cuando entro al if: ', $obj);
                     return $obj;
                 }
             }
-            var_dump($obj);
+            //var_dump($obj);
             return $obj;
         }
         catch(Exception $e){
@@ -235,9 +235,6 @@ class DAOUsuario
                       $obj->apellido1,
                       $obj->apellido2,
 					  $obj->correo,
-                      $obj->genero,
-                      $obj->contrasenia,
-                      $obj->telefono,
 					  $obj->id)
 					);
             return true;
@@ -307,7 +304,7 @@ class DAOUsuario
         ]);
         $clave = $this->conexion->lastInsertId();
         return $clave;
-    } catch (Exception $e) {
+    } catch (Exception $e){
         return $clave;
     } finally {
         Conexion::desconectar();
