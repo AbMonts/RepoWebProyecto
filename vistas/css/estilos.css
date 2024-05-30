@@ -1,18 +1,12 @@
 :root{
-    --fondo:#6e9ed4 ;
-    --fondo-resalte:#297fc1;
-    --fondo-resalte2:#30bbe1;
+    --fondo:#2c3e50; /* Fondo oscuro */
+    --fondo-resalte:#1a252f; /* Fondo resalte oscuro */
+    --fondo-resalte2:#34495e; /* Fondo resalte2 oscuro */
 }
+
 .bg-pink{
     background-color:var(--fondo);
 }
-.valido {
-    border-color: green;
-  }
-  
-  .novalido {
-    border-color: red;
-  }
 
 nav .form-control{
     border-radius: 0;
@@ -38,13 +32,13 @@ nav .dropdown-item:hover {
 }
 
 .btn-pink{
-    background-color: var(--fondo-resalte);
-    color: white;
+    background-color: var(--fondo-resalte) !important;
+    color: white !important;
 }
 
 .btn-pink:hover{
-    background-color: var(--fondo-resalte2);
-    color: white;
+    background-color: var(--fondo-resalte2) !important;
+    color: white !important;
 }
 
 .featurette-divider{
@@ -59,7 +53,6 @@ main{
 footer{
     border-top: 5px solid var(--fondo);
 }
-
 
 form > div > div:not(.input-group){
     display: none;
@@ -79,41 +72,50 @@ form div div.input-group:has(.novalido) ~ div{
 
 form.validado input:invalid, .novalido{
     border: 1px solid red !important;
-
 }
 
 body {
     font-family: Arial, sans-serif;
+    background-color: #1c1c1c; /* Fondo oscuro para el cuerpo */
+    color: #ecf0f1; /* Texto claro */
 }
+
 .container {
     margin-top: 20px;
 }
+
 .search-bar form {
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
 }
+
 .tasks-container {
-    background-color: #8FBC8F;
+    background-color: #34495e; /* Fondo oscuro para tasks-container */
     height: 300px;
     margin-bottom: 20px;
     padding: 20px;
     overflow-y: auto;
 }
+
 .button-group {
     display: flex;
     justify-content: space-between;
 }
+
 .card {
     margin: 0 auto !important;
     height: 100% !important;
+    background-color: #2c3e50; /* Fondo oscuro para las tarjetas */
+    color: #ecf0f1; /* Texto claro para las tarjetas */
 }
-
 
 .card-header {
     text-align: center !important;
     font-size: larger !important;
     font-weight: bold !important;
+    background-color: #1a252f; /* Fondo oscuro para el encabezado de la tarjeta */
+    color: #ecf0f1; /* Texto claro para el encabezado */
 }
 
 .barras{
@@ -123,14 +125,12 @@ body {
 }
 
 .targetasInfo{
-
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    
 }
 
-.card-item{
-    width: 70% !important;
-    height: auto !important;
-  }
+.card .item{
+    flex-grow: 7 !important; /* default 0 */
+    width: 70%;
+}

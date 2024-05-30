@@ -10,6 +10,9 @@ CREATE TABLE usuarios (
     isEnabled BOOLEAN DEFAULT TRUE
 );
 
+ALTER TABLE usuarios 
+ADD COLUMN usuario VARCHAR(100) UNIQUE;
+
 -- Crear tabla de tareas
 CREATE TABLE tareas (
     id SERIAL PRIMARY KEY,
@@ -109,3 +112,16 @@ SELECT id, nombre, apellido1, apellido2, rol, contrasena
 select * from tareas;
 
 SELECT id, titulo, contenido, fechainicio, fechafin, isdone FROM Tareas WHERE idUsuario = 1;
+
+SELECT id, nombre, correo, apellido1, apellido2, rol, contrasena FROM usuarios WHERE id=1;
+
+UPDATE usuarios
+  SET nombre = 'Juanito', correo = 'juan.perez@example.com', apellido1 = 'Garcia', apellido2 = 'Ramos', rol = 'usuario', contrasena = '1234', isenabled = true
+                    WHERE id = 1;
+
+
+INSERT INTO usuarios (nombre, apellido1, apellido2, correo, usuario, rol, contrasena, isEnabled) 
+                VALUES ('Abril', 'Penaloza', 'Tenorio', 'abrilmontse15@gmail.com', 'AbMonts', 'usuario', 1234, true);
+
+
+SELECT * FROM eventos WHERE idUsuario = 1;
