@@ -23,6 +23,10 @@
   <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarNotaModal">
     Agregar Nota
   </button>
+  <div>
+  <a href="home.php" class="btn btn-secondary">Regresar</a>
+  </div>
+  
 
   <div id="notasContainer" class="row">
     <?php

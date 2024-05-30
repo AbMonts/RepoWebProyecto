@@ -129,8 +129,15 @@ body {
     flex-direction: row;
     justify-content: space-around;
 }
-
-.card .item{
-    flex-grow: 7 !important; /* default 0 */
-    width: 70%;
+.card {
+    width: 18rem;
+    transition: transform 0.3s ease-in-out;
+  }
+  .card:hover {
+    transform: translateY(10px);
+  }
+  
+.card .card-item{
+     /* default 0 */
+    width: 70% !important ;
 }

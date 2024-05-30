@@ -1,16 +1,16 @@
+<?php
+  session_start();
+  require("menuPrivado.php");
+?>
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bootstrap demo</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Eventos del Mes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="css/estilos.css">
-  <link href="css/bootstrap.min.css" rel="stylesheet">
   <style>
     .card-container {
       position: absolute;
@@ -23,11 +23,16 @@
     }
     .card {
       width: 18rem;
+      transition: transform 0.3s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(90px);
     }
   </style>
 </head>
 <body>
-  <?php require("menuPrivado.php"); ?>
+
+<div class="container my-5"></div>
   <main>
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
@@ -48,66 +53,61 @@
       </button>
     </div>
 
+
     <div class="card-container">
-      <div class="card">
-        <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Notas</h5>
-          <p class="card-text">Puedes crear tus propias notas.</p>
-        </div>
-      </div>
-      <div class="card">
-        <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Tareas</h5>
-          <p class="card-text">Haz un listado de tareas, y agendalas.</p>
-        </div>
-      </div>
-      <div class="card">
-        <img src="imgs/gestion.webp" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Eventos</h5>
-          <p class="card-text">Agenda próximos eventos.</p>
-        </div>
-      </div>
+  <a href="Notas.php" class="card">
+    <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Notas</h5>
+      <p class="card-text">Puedes crear tus propias notas.</p>
     </div>
+  </a>
+  <a href="Tareas.php" class="card">
+    <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Tareas</h5>
+      <p class="card-text">Haz un listado de tareas, y agendalas.</p>
+    </div>
+  </a>
+  <a href="#" class="card">
+    <img src="imgs/gestion.webp" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Eventos</h5>
+      <p class="card-text">Agenda próximos eventos.</p>
+    </div>
+  </a>
+</div>
 
-    <!-- Mostrar los eventos del usuario -->
-    <?php
-    // Asegúrate de incluir DAOEvento y de tener un objeto de sesión de usuario ya establecido
-    require_once("../datos/DAOEventos.php");
-    $idUsuario = $_SESSION['id']; // Asumiendo que el ID del usuario está almacenado en la sesión
-    $daoEvento = new DAOEvento();
-    $eventos = $daoEvento->obtenerPorId($idUsuario);
-    ?>
 
-    <div class="container mt-5">
-      <div class="card">
-        <div class="card-header">
-          Eventos
-        </div>
-        <div class="card-body">
-          <div class="accordion" id="accordionEventos">
+    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
+      <?php
+      require_once("../datos/DAOEventos.php");
+      $idUsuario = $_SESSION['id'];
+      $daoEvento = new DAOEvento();
+      $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
+      ?>
+      <div class="container mt-5">
+        <div class="card card-item">
+          <div class="card-header">
+            Eventos de este Mes
+          </div>
+          <div class="card-body">
             <?php foreach ($eventos as $evento): ?>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading<?php echo $evento->id; ?>">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $evento->id; ?>" aria-expanded="true" aria-controls="collapse<?php echo $evento->id; ?>">
-                  <?php echo htmlspecialchars($evento->titulo); ?>
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto"><?php echo htmlspecialchars($evento->titulo); ?></strong>
+                <small class="text-muted"><?php echo htmlspecialchars($evento->fechainicio); ?></small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                <?php echo htmlspecialchars($evento->descripcion); ?>
+                <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
+                <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>">
+                  Editar
                 </button>
-              </h2>
-              <div id="collapse<?php echo $evento->id; ?>" class="accordion-collapse collapse" aria-labelledby="heading<?php echo $evento->id; ?>" data-bs-parent="#accordionEventos">
-                <div class="accordion-body">
-                  <p><?php echo htmlspecialchars($evento->descripcion); ?></p>
-                  <p><strong>Fecha Inicio:</strong> <?php echo htmlspecialchars($evento->fechaInicio); ?></p>
-                  <p><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechaFin); ?></p>
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>">
-                    Editar
-                  </button>
-                </div>
               </div>
             </div>
 
-            <!-- Modal para editar evento -->
             <div class="modal fade" id="modalEditarEvento<?php echo $evento->id; ?>" tabindex="-1" aria-labelledby="modalEditarEventoLabel<?php echo $evento->id; ?>" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
@@ -144,11 +144,9 @@
           </div>
         </div>
       </div>
-    </div>
+    <?php endif; ?>
   </main>
   <?php require("pie.php"); ?>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" integrity="sha512-GWzVrcGlo0TxTRvz9ttioyYJ+Wwk9Ck0G81D+eO63BaqHaJ3YZX9wuqjwgfcV/MrB2PhaVX9DkYVhbFpStnqpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
