@@ -1,7 +1,29 @@
 <?php
 session_start();
 require("menuPrivado.php");
+
+function calcularTiempoRestante($fechafin) {
+    $fechaFin = new DateTime($fechafin);
+    $fechaActual = new DateTime();
+    $intervalo = $fechaActual->diff($fechaFin);
+    $diasRestantes = $intervalo->days;
+
+    // Calcular el porcentaje de tiempo restante (para la barra de progreso)
+    $totalDias = (new DateTime($fechafin))->diff(new DateTime())->days;
+    
+    if ($totalDias == 0) {
+        $porcentajeRestante = 10; // Si no hay días restantes, aseguramos que el porcentaje mínimo sea 10%
+    } else {
+        $porcentajeRestante = ($diasRestantes / $totalDias) * 90; // Máximo porcentaje 90%
+        if ($porcentajeRestante < 10) {
+            $porcentajeRestante = 10; // Porcentaje mínimo de 10%
+        }
+    }
+
+    return [$diasRestantes, $porcentajeRestante];
+}
 ?>
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -35,10 +57,9 @@ require("menuPrivado.php");
       flex-wrap: wrap;
       gap: 20px;
     }
-    .toast-body{
+    .toast-body {
       color: black;
     }
-
     .modal.fade .modal-dialog {
       transform: translate(0, -25%);
       transition: transform 0.3s ease-out;
@@ -97,13 +118,13 @@ require("menuPrivado.php");
 </div>
 <?php endif; ?>
 
-
-  <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
+<?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
     <?php
     require_once("../datos/DAOEventos.php");
     $idUsuario = $_SESSION['id'];
     $daoEvento = new DAOEvento();
     $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
+
     ?>
     <div class="container mt-5 mx-5">
       <div class="card card-item" id="cardEvents">
@@ -111,24 +132,22 @@ require("menuPrivado.php");
           Eventos de este Mes
         </div>
         <div class="card-body toast-container py-5">
-          <?php foreach ($eventos as $evento): ?>
+          <?php foreach ($eventos as $evento):
+              list($diasRestantes, $porcentajeRestante) = calcularTiempoRestante($evento->fechafin);
+          ?>
           <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
               <strong class="me-auto"><?php echo htmlspecialchars($evento->titulo); ?></strong>
               <small class="text-muted"><?php echo htmlspecialchars($evento->fechainicio); ?></small>
-              
             </div>
             <div class="toast-body">
               <?php echo htmlspecialchars($evento->descripcion); ?>
               <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
-              <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>" data-backdrop="static" data-keyboard="false">
-                Visualizar evento
-              </button>
+              <div class="progress mt-2">
+                <div class="progress-bar" role="progressbar" style="width: <?php echo $porcentajeRestante; ?>%;" aria-valuenow="<?php echo $porcentajeRestante; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $porcentajeRestante; ?>%</div>
+              </div>
             </div>
           </div>
-
-        
-
           <?php endforeach; ?>
         </div>
       </div>

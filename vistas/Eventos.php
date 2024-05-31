@@ -4,6 +4,7 @@ require_once '../datos/DAOEventos.php';
 
 if (!isset($_SESSION['id'])) {
     echo "<div class='alert alert-danger'>Usuario no autenticado</div>";
+    header('Location: index.php');
     exit;
 }
 
@@ -21,25 +22,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $eventoId = $_POST['eliminarEventoId'];
         $resultado = $dao->eliminar($eventoId);
         if ($resultado) {
-            echo "<div class='alert alert-success'>El evento ha sido eliminado exitosamente.</div>";
+            $_SESSION['mensaje'] = 'El evento ha sido eliminado exitosamente.';
         } else {
-            echo "<div class='alert alert-danger'>No se pudo eliminar el evento.</div>";
+            $_SESSION['mensaje'] = 'No se pudo eliminar el evento.';
         }
+        header('Location: Eventos.php');
+        exit;
     } elseif (isset($_POST['modificarEventoId'])) {
         $eventoId = $_POST['modificarEventoId'];
         $titulo = $_POST['titulo'];
         $descripcion = $_POST['descripcion'];
         $fechainicio = $_POST['fechainicio'];
         $fechafin = $_POST['fechafin'];
+        $idUsuario = $_POST['idUsuario'];
         $resultado = $dao->actualizar($eventoId, $titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
         if ($resultado) {
-            echo "<div class='alert alert-success'>El evento ha sido modificado exitosamente.</div>";
+            $_SESSION['mensaje'] = 'El evento ha sido modificado exitosamente.';
         } else {
-            echo "<div class='alert alert-danger'>No se pudo modificar el evento.</div>";
+            $_SESSION['mensaje'] = 'No se pudo modificar el evento.';
         }
+        header('Location: Eventos.php');
+        exit;
+    } elseif (isset($_POST['agregarEvento'])) {
+        $titulo = $_POST['titulo'];
+        $descripcion = $_POST['descripcion'];
+        $fechainicio = $_POST['fechainicio'];
+        $fechafin = $_POST['fechafin'];
+        $resultado = $dao->agregar($titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
+        if ($resultado) {
+            $_SESSION['mensaje'] = 'El evento ha sido agregado exitosamente.';
+        } else {
+            $_SESSION['mensaje'] = 'No se pudo agregar el evento.';
+        }
+        header('Location: Eventos.php');
+        exit;
     }
 }
+
+$mensaje = '';
+if (isset($_SESSION['mensaje'])) {
+    $mensaje = $_SESSION['mensaje'];
+    unset($_SESSION['mensaje']);
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -57,11 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="container mt-5">
     <h1 class="mb-4">Eventos del Usuario</h1>
+    <?php if ($mensaje): ?>
+        <div class="alert alert-info"><?php echo $mensaje; ?></div>
+    <?php endif; ?>
     <a href="home.php" class="btn btn-secondary mb-4">Regresar</a>
     <button type="button" class="btn btn-primary mb-4 ml-5" data-bs-toggle="modal" data-bs-target="#agregarEventoModal">
         Agregar Evento
     </button>
-   
 
     <div class="list-group">
         <?php
@@ -88,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="formAgregarEvento" method="post" action="agregarEvento.php">
+                <form id="formAgregarEvento" method="post" action="">
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título</label>
                         <input type="text" class="form-control" id="titulo" name="titulo" required>
@@ -105,6 +133,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="fechafin" class="form-label">Fecha de Fin</label>
                         <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" required>
                     </div>
+                    <input type="hidden" name="idUsuario" value="<?php echo $idUsuario; ?>">
+                    <input type="hidden" name="agregarEvento" value="1">
                     <button type="submit" class="btn btn-primary">Guardar Evento</button>
                 </form>
             </div>
@@ -127,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <form id="formEliminarEvento" method="post" action="">
                     <input type="hidden" name="eliminarEventoId" id="eliminarEventoId">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="submit" class="btn btn-danger" onclick="cerrarModal('confirmarEliminarModal')">Eliminar</button>
                 </form>
             </div>
         </div>
@@ -145,6 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="modal-body">
                 <form id="formModificarEvento" method="post" action="">
                     <input type="hidden" name="modificarEventoId" id="modificarEventoId">
+                    <input type="hidden" name="idUsuario" id="idUsuario" value="<?php echo $idUsuario; ?>">
                     <div class="mb-3">
                         <label for="modificarTitulo" class="form-label">Título</label>
                         <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
@@ -163,56 +194,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </form>
+                <button type="button" class="btn btn-danger mt-3" onclick="confirmarEliminar()">Eliminar Evento</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        new Sortable(document.getElementsByClassName('list-group')[0], {
-            animation: 150,
-            ghostClass: 'bg-light'
-        });
+function modificarEvento(id, titulo, descripcion, fechainicio, fechafin) {
+    const modificarEventoIdInput = document.getElementById('modificarEventoId');
+    const modificarTituloInput = document.getElementById('modificarTitulo');
+    const modificarDescripcionInput = document.getElementById('modificarDescripcion');
+    const modificarFechaInicioInput = document.getElementById('modificarFechaInicio');
+    const modificarFechaFinInput = document.getElementById('modificarFechaFin');
+    const idUsuarioInput = document.getElementById('idUsuario');
+
+    modificarEventoIdInput.value = id;
+    modificarTituloInput.value = titulo;
+    modificarDescripcionInput.value = descripcion;
+    modificarFechaInicioInput.value = fechainicio;
+    modificarFechaFinInput.value = fechafin;
+    idUsuarioInput.value = "<?php echo $idUsuario; ?>";
+
+    const modificarEventoModal = new bootstrap.Modal(document.getElementById('editModal'));
+    modificarEventoModal.show();
+}
+
+document.querySelectorAll('.list-group-item').forEach(item => {
+    item.addEventListener('click', event => {
+        const id = item.getAttribute('data-id');
+        const titulo = item.getAttribute('data-titulo');
+        const descripcion = item.getAttribute('data-descripcion');
+        const fechainicio = item.getAttribute('data-fechainicio');
+        const fechafin = item.getAttribute('data-fechafin');
+        modificarEvento(id, titulo, descripcion, fechainicio, fechafin);
     });
+});
 
-    function confirmarEliminarEvento(id) {
-        const eliminarEventoIdInput = document.getElementById('eliminarEventoId');
-        eliminarEventoIdInput.value = id;
-        const confirmarEliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
-        confirmarEliminarModal.show();
-    }
+function confirmarEliminar() {
+    const modificarEventoIdInput = document.getElementById('modificarEventoId').value;
+    const eliminarEventoIdInput = document.getElementById('eliminarEventoId');
+    eliminarEventoIdInput.value = modificarEventoIdInput;
+    
+    const confirmarEliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+    confirmarEliminarModal.show();
+}
 
-    function modificarEvento(id, titulo, descripcion, fechainicio, fechafin) {
-        const modificarEventoIdInput = document.getElementById('modificarEventoId');
-        const modificarTituloInput = document.getElementById('modificarTitulo');
-        const modificarDescripcionInput = document.getElementById('modificarDescripcion');
-        const modificarFechaInicioInput = document.getElementById('modificarFechaInicio');
-        const modificarFechaFinInput = document.getElementById('modificarFechaFin');
+function cerrarModal(modalId) {
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.hide();
+}
 
-        modificarEventoIdInput.value = id;
-        modificarTituloInput.value = titulo;
-        modificarDescripcionInput.value = descripcion;
-        modificarFechaInicioInput.value = fechainicio;
-        modificarFechaFinInput.value = fechafin;
-
-        const modificarEventoModal = new bootstrap.Modal(document.getElementById('editModal'));
-        modificarEventoModal.show();
-    }
-
-    document.querySelectorAll('.list-group-item').forEach(item => {
-        item.addEventListener('click', event => {
-            const id = item.getAttribute('data-id');
-            const titulo = item.getAttribute('data-titulo');
-            const descripcion = item.getAttribute('data-descripcion');
-            const fechainicio = item.getAttribute('data-fechainicio');
-            const fechafin = item.getAttribute('data-fechafin');
-            modificarEvento(id, titulo, descripcion, fechainicio, fechafin);
-        });
-    });
+document.getElementById('formEliminarEvento').addEventListener('submit', function(event) {
+    cerrarModal('editModal');
+    cerrarModal('confirmarEliminarModal');
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
