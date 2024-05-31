@@ -34,6 +34,18 @@ require("menuPrivado.php");
       flex-wrap: wrap;
       gap: 20px;
     }
+
+  .modal {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s ease-in-out;
+  }
+
+  .modal.show {
+    visibility: visible;
+    opacity: 1;
+  }
+
   </style>
 </head>
 <body>
@@ -86,7 +98,7 @@ require("menuPrivado.php");
 
     
 <center>
-<div class="container my-2"></div>
+<div class="container my-5"></div>
 <main id="carrusel_tareas">
   <div class="container">
     <div id="carouselExampleAutoplaying" class="carousel slide mb-5" data-bs-ride="carousel">
@@ -143,44 +155,46 @@ require("menuPrivado.php");
               <div class="toast-body">
                 <?php echo htmlspecialchars($evento->Contenido); ?>
                 <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
-                <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>">
+                <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>" data-backdrop="static" data-keyboard="false">
                   Editar
                 </button>
               </div>
             </div>
 
             <div class="modal fade" id="modalEditarEvento<?php echo $evento->id; ?>" tabindex="-1" aria-labelledby="modalEditarEventoLabel<?php echo $evento->id; ?>" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditarEventoLabel<?php echo $evento->id; ?>">Editar Evento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form action="actualizar_evento.php" method="post">
-                      <input type="hidden" name="id" value="<?php echo $evento->id; ?>">
-                      <div class="mb-3">
-                        <label for="titulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($evento->titulo); ?>">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Contenido" class="form-label">Contenido</label>
-                        <textarea class="form-control" id="Contenido" name="Contenido"><?php echo htmlspecialchars($evento->Contenido); ?></textarea>
-                      </div>
-                      <div class="mb-3">
-                        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                        <input type="datetime-local" class="form-control" id="fechaInicio" name="fechaInicio" value="<?php echo htmlspecialchars($evento->fechainicio); ?>">
-                      </div>
-                      <div class="mb-3">
-                        <label for="fechaFin" class="form-label">Fecha Fin</label>
-                        <input type="datetime-local" class="form-control" id="fechaFin" name="fechaFin" value="<?php echo htmlspecialchars($evento->fechafin); ?>">
-                      </div>
-                      <button type="submit" class="btn btn-primary">Guardar</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarEventoLabel<?php echo $evento->id; ?>">Editar Evento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="actualizar_evento.php" method="post">
+          <input type="hidden" name="id" value="<?php echo $evento->id; ?>">
+          <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($evento->titulo); ?>">
+          </div>
+          <div class="mb-3">
+            <label for="Contenido" class="form-label">Contenido</label>
+            <textarea class="form-control" id="Contenido" name="Contenido"><?php echo htmlspecialchars($evento->Contenido); ?></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+            <input type="datetime-local" class="form-control" id="fechaInicio" name="fechaInicio" value="<?php echo htmlspecialchars($evento->fechainicio); ?>">
+          </div>
+          <div class="mb-3">
+            <label for="fechaFin" class="form-label">Fecha Fin</label>
+            <input type="datetime-local" class="form-control" id="fechaFin" name="fechaFin" value="<?php echo htmlspecialchars($evento->fechafin); ?>">
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
             <?php endforeach; ?>
           </div>
         </div>
@@ -190,5 +204,14 @@ require("menuPrivado.php");
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-aoe/iQpD+qJJQljWkHD9E3qu9IqSwDoF7ub5i+4/0EGdtKYYeq7iLZPzVwW2wsUh" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-QT3ZpjKwiIk1A7oTOQo4avczWYXtmfA2jGFuDA1jOBPpJ2VeQIYFE5ppQL0N6gCV" crossorigin="anonymous"></script>
+  <script>
+    // Desplazarse hacia arriba cuando se abra el modal
+    var modals = document.querySelectorAll('.modal');
+    modals.forEach(function(modal) {
+        modal.addEventListener('shown.bs.modal', function () {
+            window.scrollTo(0, 0);
+        });
+    });
+  </script>
 </body>
 </html>
