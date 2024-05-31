@@ -180,3 +180,11 @@ form.validado input:invalid,
     justify-content: space-evenly;
 
 }
+
+
+#carrusel_tareas{
+    height: 40%;
+    width: 40%;
+    display: flex !important;
+    justify-content: center !important;
+}

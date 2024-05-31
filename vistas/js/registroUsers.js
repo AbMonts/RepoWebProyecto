@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const apellido1 = document.getElementById("apellido1");
     const correo = document.getElementById("correo");
     const usuario = document.getElementById("usuario");
-    const contrasena = document.getElementById("contrasena");
+    const contrasena = document.getElementById("contrasena"); 
 
     nombre.setCustomValidity("");
     apellido1.setCustomValidity("");

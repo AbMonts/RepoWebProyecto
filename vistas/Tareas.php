@@ -52,10 +52,7 @@
 
     <div>
       <h2>Tareas</h2>
-        <div class="input-group form-floating mb-3">
-          <input type="text" class="form-control " name="search" id="search">
-          <label for="search" >Buscar tarea</label>
-     </div>
+ 
    
     <div class="button-group my-3">
       <a href="home.php" class="btn btn-secondary">Regresar</a>

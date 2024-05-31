@@ -11,7 +11,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="css/estilos.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js" integrity="sha512-Rfdu1c2/8/1hrbiSFT8+P+57odUXcFGmTfJmvjVOhdQgi1+xW6BfW8I/TPZMb/gAjTxXZ8ykA69hYbfPoc3PA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <link  href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <?php require("menuPrivado.php"); ?>
@@ -19,6 +19,36 @@
 <div class="container pt-4">
   <h2>Notas</h2>
   
+  <?php
+    require_once '../datos/DAONotas.php';
+
+    $daoNotas = new DAONotas();
+    $idUsuario = 1; // Reemplaza esto con el ID del usuario que esté autenticado en tu aplicación
+    $notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['eliminarNotaId'])) {
+        $notaId = $_POST['eliminarNotaId'];
+        $resultado = $daoNotas->eliminarNota($notaId);
+        if ($resultado) {
+            echo "<div class='alert alert-success'>La nota ha sido eliminada exitosamente.</div>";
+        } else {
+            echo "<div class='alert alert-danger'>No se pudo eliminar la nota.</div>";
+        }
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['modificarNotaId'])) {
+        $notaId = $_POST['modificarNotaId'];
+        $titulo = $_POST['titulo'];
+        $contenido = $_POST['contenido'];
+        $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
+        if ($resultado) {
+            echo "<div class='alert alert-success'>La nota ha sido modificada exitosamente.</div>";
+        } else {
+            echo "<div class='alert alert-danger'>No se pudo modificar la nota.</div>";
+        }
+    }
+  ?>
+
   <!-- Botón para abrir el modal -->
   <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarNotaModal">
     Agregar Nota
@@ -29,12 +59,6 @@
   
   <div id="notasContainer" class="row">
     <?php
-      require_once '../datos/DAONotas.php';
-
-      $daoNotas = new DAONotas();
-      $idUsuario = 1; // Reemplaza esto con el ID del usuario que esté autenticado en tu aplicación
-      $notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
-
       if ($notas) {
         foreach ($notas as $nota) {
           echo "
@@ -57,6 +81,8 @@
                       <div class='accordion-body'>
                         <p>" . htmlspecialchars($nota->contenido) . "</p>
                         <a href='descargarNota.php?id=" . $nota->id . "' class='btn btn-primary' download><i class='fas fa-download'></i> Descargar</a>
+                        <button class='btn btn-danger ms-2' onclick='confirmarEliminarNota(" . $nota->id . ")'><i class='fas fa-trash'></i> Eliminar</button>
+                        <button class='btn btn-warning ms-2' onclick='modificarNota(" . $nota->id . ", \"" . htmlspecialchars($nota->titulo) . "\", \"" . htmlspecialchars($nota->contenido) . "\")'><i class='fas fa-edit'></i> Modificar</button>
                       </div>
                     </div>
                   </div>
@@ -102,6 +128,54 @@
   </div>
 </div>
 
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro de que desea eliminar esta nota?
+      </div>
+      <div class="modal-footer">
+        <form id="formEliminarNota" method="post" action="">
+          <input type="hidden" name="eliminarNotaId" id="eliminarNotaId">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para modificar nota -->
+<div class="modal fade" id="modificarNotaModal" tabindex="-1" aria-labelledby="modificarNotaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modificarNotaModalLabel">Modificar Nota</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formModificarNota" method="post" action="">
+          <input type="hidden" name="modificarNotaId" id="modificarNotaId">
+          <div class="mb-3">
+            <label for="modificarTitulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
+          </div>
+          <div class="mb-3">
+            <label for="modificarContenido" class="form-label">Contenido</label>
+            <textarea class="form-control" id="modificarContenido" name="contenido" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', (event) => {
     new Sortable(document.getElementById('notasContainer'), {
@@ -109,6 +183,26 @@
       ghostClass: 'bg-light'
     });
   });
+
+  function confirmarEliminarNota(id) {
+    const eliminarNotaIdInput = document.getElementById('eliminarNotaId');
+    eliminarNotaIdInput.value = id;
+    const confirmarEliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+    confirmarEliminarModal.show();
+  }
+
+  function modificarNota(id, titulo, contenido) {
+    const modificarNotaIdInput = document.getElementById('modificarNotaId');
+    const modificarTituloInput = document.getElementById('modificarTitulo');
+    const modificarContenidoInput = document.getElementById('modificarContenido');
+
+    modificarNotaIdInput.value = id;
+    modificarTituloInput.value = titulo;
+    modificarContenidoInput.value = contenido;
+
+    const modificarNotaModal = new bootstrap.Modal(document.getElementById('modificarNotaModal'));
+    modificarNotaModal.show();
+  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
