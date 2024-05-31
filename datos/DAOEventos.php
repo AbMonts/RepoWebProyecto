@@ -31,11 +31,12 @@ class DAOEvento {
             $sql = "SELECT * FROM eventos WHERE idUsuario = :id";
             $sentenciaSQL = $this->conexion->prepare($sql);
             $sentenciaSQL->execute([':id' => $id]);
-            return $sentenciaSQL->fetch(PDO::FETCH_OBJ);
+            return $sentenciaSQL->fetchAll(PDO::FETCH_OBJ); // Usa fetchAll para devolver un array de objetos
         } catch (Exception $e) {
-            return null;
+            return [];
         }
     }
+    
 
     public function obtenerTodos() {
         try {
@@ -77,19 +78,6 @@ class DAOEvento {
         }
     }
 
-    // public function obtenerEventosDelMes($idUsuario) {
-    //     try {
-    //         $sql = "SELECT id, titulo, descripcion, fechaInicio, fechaFin
-    //                 FROM eventos
-    //                 WHERE idUsuario = :idUsuario";
-    //         $sentenciaSQL = $this->conexion->prepare($sql);
-    //         $sentenciaSQL->execute([':idUsuario' => $idUsuario]);
-    //         return $sentenciaSQL->fetchAll(PDO::FETCH_OBJ);
-    //     } catch (Exception $e) {
-    //         return [];
-    //     }
-    // }
-
     public function obtenerEventosDelMes($idUsuario) {
         try {
             $sql = "SELECT id, titulo, descripcion, fechaInicio, fechaFin
@@ -102,7 +90,4 @@ class DAOEvento {
             return [];
         }
     }
-    
-    
-    
 }

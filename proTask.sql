@@ -109,7 +109,7 @@ INSERT INTO notas (titulo, contenido, idUsuario) VALUES
 select * from usuarios;
 SELECT id, nombre, apellido1, apellido2, rol, contrasena 
                 FROM usuarios WHERE correo = 'juan.perez@example.com';
-select * from tareas;
+select * from eventos;
 
 SELECT id, titulo, contenido, fechainicio, fechafin, isdone FROM Tareas WHERE idUsuario = 1;
 
@@ -125,3 +125,7 @@ INSERT INTO usuarios (nombre, apellido1, apellido2, correo, usuario, rol, contra
 
 
 SELECT * FROM eventos WHERE idUsuario = 1;
+
+SELECT id, titulo, descripcion, fechaInicio, fechaFin
+                    FROM eventos
+                    WHERE idUsuario = 1;

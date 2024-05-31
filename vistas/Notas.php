@@ -23,7 +23,7 @@
     require_once '../datos/DAONotas.php';
 
     $daoNotas = new DAONotas();
-    $idUsuario = 1; // Reemplaza esto con el ID del usuario que esté autenticado en tu aplicación
+    $idUsuario = $_SESSION['id']; 
     $notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['eliminarNotaId'])) {

@@ -6,9 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("nombre").onkeyup = e => validarCampo(e, 1, 100);
   document.getElementById("apellido1").onkeyup = e => validarCampo(e, 1, 100);
   document.getElementById("apellido2").onkeyup = e => validarCampo(e, 0, 100);
-  document.getElementById("correo").onkeyup = e => validarCorreo(e);
   document.getElementById("usuario").onkeyup = e => validarCampo(e, 1, 50);
   document.getElementById("contrasena").onkeyup = e => validarCampo(e, 1, 255);
+
+  // Validación de correo electrónico al perder el foco del campo
+  document.getElementById("correo").onblur = e => validarCorreoDisponible(e);
 
   form.addEventListener("submit", e => {
     let alert = form.querySelector(".alert");
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const apellido1 = document.getElementById("apellido1");
     const correo = document.getElementById("correo");
     const usuario = document.getElementById("usuario");
-    const contrasena = document.getElementById("contrasena"); 
+    const contrasena = document.getElementById("contrasena");
 
     nombre.setCustomValidity("");
     apellido1.setCustomValidity("");
@@ -49,16 +51,35 @@ function validarCampo(e, min, max) {
   }
 }
 
-function validarCorreo(e) {
+function validarCorreoDisponible(e) {
   if (e.code === "Tab") return;
   const txt = e.target;
   if (txt.value.trim().match(regexMail)) {
-    txt.setCustomValidity("");
-    txt.classList.add("valido");
-    txt.classList.remove("novalido");
+    // Realizar la solicitud AJAX para validar si el correo está disponible
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "validar_correo.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          if (response.error) {
+            txt.setCustomValidity(response.message);
+            txt.classList.add("novalido");
+          } else {
+            txt.setCustomValidity("");
+            txt.classList.add("valido");
+          }
+        } else {
+          console.error("Error en la solicitud.");
+        }
+      }
+    };
+    xhr.send("correo=" + encodeURIComponent(txt.value.trim()));
   } else {
     txt.setCustomValidity("Campo no válido");
     txt.classList.remove("valido");
     txt.classList.add("novalido");
   }
+
 }
