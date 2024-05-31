@@ -1,6 +1,6 @@
 <?php
-  session_start();
-  require("menuPrivado.php");
+session_start();
+require("menuPrivado.php");
 ?>
 <!doctype html>
 <html lang="es">
@@ -59,7 +59,6 @@
       </button>
     </div>
 
-
     <div class="card-container">
       <a href="Notas.php" class="card">
         <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
@@ -84,6 +83,43 @@
       </a>
     </div>
 
+
+    
+<center>
+<div class="container my-2"></div>
+<main id="carrusel_tareas">
+  <div class="container">
+    <div id="carouselExampleAutoplaying" class="carousel slide mb-5" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="imgs/Evento2.jpg" class="d-block w-100" alt="...">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Leyenda de la primera imagen</h5>
+            <p>Descripción o cualquier otro texto que desees agregar.</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="imgs/Evento2.jpg" class="d-block w-100" alt="...">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Leyenda de la segunda imagen</h5>
+            <p>Descripción o cualquier otro texto que desees agregar.</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+</main>
+  </center>
+
+
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
       <?php
       require_once("../datos/DAOEventos.php");
@@ -96,7 +132,7 @@
           <div class="card-header">
             Eventos de este Mes
           </div>
-          <div class="card-body toast-container">
+          <div class="card-body toast-container py-5">
             <?php foreach ($eventos as $evento): ?>
             <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="toast-header">
@@ -105,7 +141,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
               </div>
               <div class="toast-body">
-                <?php echo htmlspecialchars($evento->descripcion); ?>
+                <?php echo htmlspecialchars($evento->Contenido); ?>
                 <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
                 <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>">
                   Editar
@@ -128,8 +164,8 @@
                         <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($evento->titulo); ?>">
                       </div>
                       <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion"><?php echo htmlspecialchars($evento->descripcion); ?></textarea>
+                        <label for="Contenido" class="form-label">Contenido</label>
+                        <textarea class="form-control" id="Contenido" name="Contenido"><?php echo htmlspecialchars($evento->Contenido); ?></textarea>
                       </div>
                       <div class="mb-3">
                         <label for="fechaInicio" class="form-label">Fecha Inicio</label>
@@ -151,7 +187,8 @@
       </div>
     <?php endif; ?>
   </main>
-  <?php require("pie.php"); ?>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-aoe/iQpD+qJJQljWkHD9E3qu9IqSwDoF7ub5i+4/0EGdtKYYeq7iLZPzVwW2wsUh" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-QT3ZpjKwiIk1A7oTOQo4avczWYXtmfA2jGFuDA1jOBPpJ2VeQIYFE5ppQL0N6gCV" crossorigin="anonymous"></script>
 </body>
 </html>

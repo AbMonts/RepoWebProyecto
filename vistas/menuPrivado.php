@@ -13,10 +13,14 @@ if (!isset($_SESSION["id"])) {
 $usuarioId = $_SESSION["id"];
 $usuarioRol = isset($_SESSION["rol"]) ? $_SESSION["rol"] : null;
 
+// Obtener el nombre del archivo actual
+$currentFile = basename($_SERVER['PHP_SELF']);
+
 // // Depuración: Verifica los valores de la sesión
 // // Esto debería comentarse o eliminarse en producción
 // echo "Usuario ID: " . $usuarioId . "<br>";
 // echo "Usuario Rol: " . $usuarioRol . "<br>";
+// echo "Archivo Actual: " . $currentFile . "<br>";
 ?>
 
 <header>
@@ -32,6 +36,8 @@ $usuarioRol = isset($_SESSION["rol"]) ? $_SESSION["rol"] : null;
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="redirect.php">Inicio</a>
                     </li>
+
+                    <?php if ($currentFile != 'home.php') { ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">Seguimiento</a>
@@ -44,19 +50,21 @@ $usuarioRol = isset($_SESSION["rol"]) ? $_SESSION["rol"] : null;
                             <li><a class="dropdown-item" href="#">Lo que puedes lograr</a></li>
                         </ul>
                     </li>
-                    
+                    <?php } ?>
+
+                    <?php if ($usuarioRol == 'usuario' && $currentFile != 'home.php') { ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             Actividades
                         </a>
                         <ul class="dropdown-menu">
-                            <?php if ($usuarioRol == 'usuario') { ?>
-                                <li><a class="dropdown-item" href="Tareas.php">Tareas</a></li>
-                                <li><a class="dropdown-item" href="Notas.php">Notas</a></li>
-                            <?php } ?>
+                            <li><a class="dropdown-item" href="Tareas.php">Tareas</a></li>
+                            <li><a class="dropdown-item" href="Notas.php">Notas</a></li>
                         </ul>
                     </li>
+                    <?php } ?>
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="#">Perfil</a>
                     </li>
@@ -69,4 +77,4 @@ $usuarioRol = isset($_SESSION["rol"]) ? $_SESSION["rol"] : null;
     </nav>
 </header>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

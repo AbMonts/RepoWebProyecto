@@ -27,7 +27,6 @@
   <a href="home.php" class="btn btn-secondary">Regresar</a>
   </div>
   
-
   <div id="notasContainer" class="row">
     <?php
       require_once '../datos/DAONotas.php';
@@ -82,14 +81,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="formAgregarNota" method="post" action="agregarNota.php">
+        <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data">
           <div class="mb-3">
             <label for="titulo" class="form-label">Título</label>
             <input type="text" class="form-control" id="titulo" name="titulo" required>
           </div>
           <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>
-            <textarea class="form-control" id="contenido" name="contenido" rows="3" required></textarea>
+            <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="archivoNota" class="form-label">O cargar desde archivo</label>
+            <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
           </div>
           <input type="hidden" name="idUsuario" value="<?php echo $idUsuario; ?>">
           <button type="submit" class="btn btn-primary">Guardar Nota</button>

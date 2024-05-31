@@ -77,6 +77,19 @@ class DAOEvento {
         }
     }
 
+    // public function obtenerEventosDelMes($idUsuario) {
+    //     try {
+    //         $sql = "SELECT id, titulo, descripcion, fechaInicio, fechaFin
+    //                 FROM eventos
+    //                 WHERE idUsuario = :idUsuario";
+    //         $sentenciaSQL = $this->conexion->prepare($sql);
+    //         $sentenciaSQL->execute([':idUsuario' => $idUsuario]);
+    //         return $sentenciaSQL->fetchAll(PDO::FETCH_OBJ);
+    //     } catch (Exception $e) {
+    //         return [];
+    //     }
+    // }
+
     public function obtenerEventosDelMes($idUsuario) {
         try {
             $sql = "SELECT id, titulo, descripcion, fechaInicio, fechaFin

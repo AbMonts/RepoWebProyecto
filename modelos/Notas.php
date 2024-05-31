@@ -1,6 +1,6 @@
 <?php
 class Notas{
-    public $id=0;
+    public $id="";
     public $titulo="";
     public $Contenido="";
     public $idusuario="";

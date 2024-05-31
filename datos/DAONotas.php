@@ -1,6 +1,6 @@
 <?php
 // Importa la clase conexión y el modelo para usarlos
-require_once 'conexion.php'; 
+require_once 'Conexion.php'; 
 
 class DAONotas {
     private $conexion; 
@@ -106,12 +106,12 @@ class DAONotas {
     }
 
     // Método para agregar una nueva nota
-    public function agregarNota($titulo, $contenido, $idUsuario) {
+    public function agregarNota($nota) {
         try {
             $this->conectar();
-            $titulo = trim($titulo);
-            $contenido = trim($contenido);
-            $idUsuario = trim($idUsuario);
+            $titulo = trim($nota->titulo);
+            $contenido = trim($nota->contenido);
+            $idUsuario = trim($nota->idUsuario);
 
             // Consulta para insertar una nueva nota
             $sentenciaSQL = $this->conexion->prepare("INSERT INTO notas (titulo, contenido, idUsuario) VALUES (?, ?, ?)");
@@ -126,7 +126,5 @@ class DAONotas {
             Conexion::desconectar();
         }
     }
-
-    
 }
 ?>
