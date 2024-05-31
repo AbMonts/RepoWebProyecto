@@ -93,38 +93,47 @@ function calcularTiempoRestante($fechafin) {
   </div>
 
   <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
-<div class="card-container">
-    <a href="Notas.php" class="card">
-        <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Notas</h5>
-            <p class="card-text">Puedes crear tus propias notas.</p>
-        </div>
-    </a>
-    <a href="Tareas.php" class="card">
-        <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Tareas</h5>
-            <p class="card-text">Haz un listado de tareas, y agéndalas.</p>
-        </div>
-    </a>
-    <a href="Eventos.php" class="card">
-        <img src="imgs/gestion.webp" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Eventos</h5>
-            <p class="card-text">Agenda próximos eventos.</p>
-        </div>
-    </a>
-</div>
-<?php endif; ?>
+    <div class="card-container">
+        <a href="Notas.php" class="card">
+            <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Notas</h5>
+                <p class="card-text">Puedes crear tus propias notas.</p>
+            </div>
+        </a>
+        <a href="Tareas.php" class="card">
+            <img src="imgs/tareas2.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Tareas</h5>
+                <p class="card-text">Haz un listado de tareas, y agéndalas.</p>
+            </div>
+        </a>
+        <a href="Eventos.php" class="card">
+            <img src="imgs/gestion.webp" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Eventos</h5>
+                <p class="card-text">Agenda próximos eventos.</p>
+            </div>
+        </a>
+    </div>
+  <?php elseif (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+    <div class="card-container">
+        <a href="listaUsuarios.php" class="card">
+            <img src="imgs/gestion.webp" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Gestionar usuarios</h5>
+                <p class="card-text">Administra los usuarios del sistema.</p>
+            </div>
+        </a>
+    </div>
+  <?php endif; ?>
 
-<?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
+  <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
     <?php
     require_once("../datos/DAOEventos.php");
     $idUsuario = $_SESSION['id'];
     $daoEvento = new DAOEvento();
     $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
-
     ?>
     <div class="container mt-5 mx-5">
       <div class="card card-item" id="cardEvents">

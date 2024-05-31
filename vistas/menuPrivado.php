@@ -37,22 +37,20 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                         <a class="nav-link active" aria-current="page" href="home.php">Inicio</a>
                     </li>
 
-                    <?php if ($currentFile != 'home.php') { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false">Seguimiento</a>
-                        <ul class="dropdown-menu">
-                            <?php if ($usuarioRol == 'admin') { ?>
+                    <?php if ($currentFile != 'home.php' && $usuarioRol == 'admin') { ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Seguimiento</a>
+                            <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item" href="listaUsuarios.php">Usuarios</a>
                                 </li>
-                            <?php } ?>
-                            <li><a class="dropdown-item" href="#">Lo que puedes lograr</a></li>
-                        </ul>
-                    </li>
+                                <!-- <li><a class="dropdown-item" href="#">Lo que puedes lograr</a></li> -->
+                            </ul>
+                        </li>
                     <?php } ?>
 
-                    <?php if ($usuarioRol == 'usuario' && $currentFile != 'home.php') { ?>
+
+                    <?php if ($usuarioRol == 'usuario' && $currentFile != 'home.php' or $currentFile != 'Eventos.php') { ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
@@ -61,11 +59,12 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="Tareas.php">Tareas</a></li>
                             <li><a class="dropdown-item" href="Notas.php">Notas</a></li>
+                            <li><a class="dropdown-item" href="Eventos.php">Eventos</a></li>
                         </ul>
                     </li>
                     <?php } ?>
                     
-                    <li class="nav-item">
+                    <li class="nav-item" style="display: none;">
                         <a class="nav-link" href="#">Perfil</a>
                     </li>
                 </ul>
