@@ -4,7 +4,7 @@ session_start();
 
 // Include required files and initialize variables
 require_once "../datos/DAOUsuario.php";
-require("menuPublico.php");
+
 
 $error = false;
 $correo = $password = $form_validado = "";
@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: home.php");
             exit(); // Ensure script stops executing after redirection
         } else {
-            $error = true; // If the user is null
+            $error = true; 
             $mensaje_error = "El correo o la contraseña son incorrectos.";
         }
     } else {
@@ -34,6 +34,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensaje_error = "Por favor, ingrese un correo válido y una contraseña.";
     }
 }
+
+//Mover aquí
+require("menuPublico.php");
+
+
+
+
 
 // The HTML output starts here
 ?>
@@ -88,6 +95,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <button type="submit" id="btnAceptar" class="btn btn-pink"><i
                                     class="fa-solid fa-right-to-bracket"></i>
                                 Acceder</button>
+                              <div>
+                             
+                              </div>
                         </div>
                     </form>
                 </div>

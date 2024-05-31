@@ -20,6 +20,7 @@ require("menuPrivado.php");
       display: flex;
       justify-content: center;
       gap: 20px;
+      color: #ecf0f1; 
     }
     .card {
       width: 18rem;
@@ -33,6 +34,9 @@ require("menuPrivado.php");
       flex-direction: row;
       flex-wrap: wrap;
       gap: 20px;
+    }
+    .toast-body{
+      color: black;
     }
 
     .modal.fade .modal-dialog {
@@ -83,7 +87,7 @@ require("menuPrivado.php");
             <p class="card-text">Haz un listado de tareas, y agéndalas.</p>
         </div>
     </a>
-    <a href="#" class="card">
+    <a href="Eventos.php" class="card">
         <img src="imgs/gestion.webp" class="card-img-top" alt="...">
         <div class="card-body">
             <h5 class="card-title">Eventos</h5>
@@ -93,39 +97,6 @@ require("menuPrivado.php");
 </div>
 <?php endif; ?>
 
-  <center>
-    <div class="container my-5"></div>
-    <main id="carrusel_tareas">
-      <div class="container">
-        <div id="carouselExampleAutoplaying" class="carousel slide mb-5" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img src="imgs/Evento2.jpg" class="d-block w-100" alt="...">
-              <div class="carousel-caption d-none d-md-block">
-                <h5>Leyenda de la primera imagen</h5>
-                <p>Descripción o cualquier otro texto que desees agregar.</p>
-              </div>
-            </div>
-            <div class="carousel-item">
-              <img src="imgs/Evento2.jpg" class="d-block w-100" alt="...">
-              <div class="carousel-caption d-none d-md-block">
-                <h5>Leyenda de la segunda imagen</h5>
-                <p>Descripción o cualquier otro texto que desees agregar.</p>
-              </div>
-            </div>
-          </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
-        </div>
-      </div>
-    </main>
-  </center>
 
   <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
     <?php
@@ -134,7 +105,7 @@ require("menuPrivado.php");
     $daoEvento = new DAOEvento();
     $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
     ?>
-    <div class="container mt-5">
+    <div class="container mt-5 mx-5">
       <div class="card card-item" id="cardEvents">
         <div class="card-header">
           Eventos de este Mes
@@ -145,50 +116,18 @@ require("menuPrivado.php");
             <div class="toast-header">
               <strong class="me-auto"><?php echo htmlspecialchars($evento->titulo); ?></strong>
               <small class="text-muted"><?php echo htmlspecialchars($evento->fechainicio); ?></small>
-              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              
             </div>
             <div class="toast-body">
               <?php echo htmlspecialchars($evento->descripcion); ?>
               <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
               <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalEditarEvento<?php echo $evento->id; ?>" data-backdrop="static" data-keyboard="false">
-                Editar
+                Visualizar evento
               </button>
             </div>
           </div>
 
-          <div class="modal fade" id="modalEditarEvento<?php echo $evento->id; ?>" tabindex="-1" aria-labelledby="modalEditarEventoLabel<?php echo $evento->id; ?>" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modalEditarEventoLabel<?php echo $evento->id; ?>">Editar Evento</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form action="actualizar_evento.php" method="post">
-                    <input type="hidden" name="id" value="<?php echo $evento->id; ?>">
-                    <div class="mb-3">
-                      <label for="titulo" class="form-label">Título</label>
-                      <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($evento->titulo); ?>">
-                    </div>
-                    <div class="mb-3">
-                      <label for="descripcion" class="form-label">Descripción</label>
-                      <textarea class="form-control" id="descripcion" name="descripcion"><?php echo htmlspecialchars($evento->descripcion); ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                      <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                      <input type="datetime-local" class="form-control" id="fechaInicio" name="fechaInicio" value="<?php echo htmlspecialchars($evento->fechainicio); ?>">
-                    </div>
-                    <div class="mb-3">
-                      <label for="fechaFin" class="form-label">Fecha Fin</label>
-                      <input type="datetime-local" class="form-control" id="fechaFin" name="fechaFin" value="<?php echo htmlspecialchars($evento->fechafin); ?>">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+        
 
           <?php endforeach; ?>
         </div>
@@ -199,14 +138,6 @@ require("menuPrivado.php");
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-aoe/iQpD+qJJQljWkHD9E3qu9IqSwDoF7ub5i+4/0EGdtKYYeq7iLZPzVwW2wsUh" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-QT3ZpjKwiIk1A7oTOQo4avczWYXtmfA2jGFuDA1jOBPpJ2VeQIYFE5ppQL0N6gCV" crossorigin="anonymous"></script>
-<script>
-  // Desplazarse hacia arriba cuando se abra el modal
-  var modals = document.querySelectorAll('.modal');
-  modals.forEach(function(modal) {
-    modal.addEventListener('shown.bs.modal', function () {
-      window.scrollTo(0, 0);
-    });
-  });
-</script>
+
 </body>
 </html>
