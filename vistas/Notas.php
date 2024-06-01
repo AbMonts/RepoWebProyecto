@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -119,18 +118,21 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data">
+        <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data" onsubmit="return validarFormularioAgregar();">
           <div class="mb-3">
             <label for="titulo" class="form-label">Título</label>
             <input type="text" class="form-control" id="titulo" name="titulo" required>
+            <span class="text-danger" id="errorTitulo"></span>
           </div>
           <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>
             <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
+            <span class="text-danger" id="errorContenido"></span>
           </div>
           <div class="mb-3">
             <label for="archivoNota" class="form-label">O cargar desde archivo</label>
             <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
+            <span class="text-danger" id="errorArchivo"></span>
           </div>
           <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($idUsuario); ?>">
           <button type="submit" class="btn btn-primary">Guardar Nota</button>
@@ -171,15 +173,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="formModificarNota" method="post" action="">
+        <form id="formModificarNota" method="post" action="" onsubmit="return validarFormularioModificar();">
           <input type="hidden" name="modificarNotaId" id="modificarNotaId">
           <div class="mb-3">
             <label for="modificarTitulo" class="form-label">Título</label>
             <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
+            <span class="text-danger" id="errorModificarTitulo"></span>
           </div>
           <div class="mb-3">
             <label for="modificarContenido" class="form-label">Contenido</label>
             <textarea class="form-control" id="modificarContenido" name="contenido" rows="3"></textarea>
+            <span class="text-danger" id="errorModificarContenido"></span>
           </div>
           <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         </form>
@@ -190,13 +194,145 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/notas.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Elementos del formulario de agregar nota
+  const titulo = document.getElementById('titulo');
+  const contenido = document.getElementById('contenido');
+  const errorTitulo = document.getElementById('errorTitulo');
+  const errorContenido = document.getElementById('errorContenido');
+
+  titulo.addEventListener('input', function () {
+    if (titulo.value.length < 5) {
+      titulo.classList.add('is-invalid');
+      titulo.classList.remove('is-valid');
+      errorTitulo.textContent = 'El título debe tener al menos 5 caracteres.';
+    } else {
+      titulo.classList.remove('is-invalid');
+      titulo.classList.add('is-valid');
+      errorTitulo.textContent = '';
+    }
+  });
+
+  contenido.addEventListener('input', function () {
+    if (contenido.value.trim() === '') {
+      contenido.classList.add('is-invalid');
+      contenido.classList.remove('is-valid');
+      errorContenido.textContent = 'El contenido es obligatorio.';
+    } else {
+      contenido.classList.remove('is-invalid');
+      contenido.classList.add('is-valid');
+      errorContenido.textContent = '';
+    }
+  });
+
+  // Elementos del formulario de modificar nota
+  const modificarTitulo = document.getElementById('modificarTitulo');
+  const modificarContenido = document.getElementById('modificarContenido');
+  const errorModificarTitulo = document.getElementById('errorModificarTitulo');
+  const errorModificarContenido = document.getElementById('errorModificarContenido');
+
+  modificarTitulo.addEventListener('input', function () {
+    if (modificarTitulo.value.length < 5) {
+      modificarTitulo.classList.add('is-invalid');
+      modificarTitulo.classList.remove('is-valid');
+      errorModificarTitulo.textContent = 'El título debe tener al menos 5 caracteres.';
+    } else {
+      modificarTitulo.classList.remove('is-invalid');
+      modificarTitulo.classList.add('is-valid');
+      errorModificarTitulo.textContent = '';
+    }
+  });
+
+  modificarContenido.addEventListener('input', function () {
+    if (modificarContenido.value.trim() === '') {
+      modificarContenido.classList.add('is-invalid');
+      modificarContenido.classList.remove('is-valid');
+      errorModificarContenido.textContent = 'El contenido es obligatorio.';
+    } else {
+      modificarContenido.classList.remove('is-invalid');
+      modificarContenido.classList.add('is-valid');
+      errorModificarContenido.textContent = '';
+    }
+  });
+});
+
+function confirmarEliminarNota(notaId) {
+  const eliminarNotaIdInput = document.getElementById('eliminarNotaId');
+  eliminarNotaIdInput.value = notaId;
+  const eliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+  eliminarModal.show();
+}
+
+function modificarNota(notaId, titulo, contenido) {
+  const modificarNotaIdInput = document.getElementById('modificarNotaId');
+  const modificarTituloInput = document.getElementById('modificarTitulo');
+  const modificarContenidoInput = document.getElementById('modificarContenido');
+
+  modificarNotaIdInput.value = notaId;
+  modificarTituloInput.value = titulo;
+  modificarContenidoInput.value = contenido;
+
+  const modificarModal = new bootstrap.Modal(document.getElementById('modificarNotaModal'));
+  modificarModal.show();
+}
+
+function validarFormularioAgregar() {
+  const titulo = document.getElementById('titulo');
+  const contenido = document.getElementById('contenido');
+  let isValid = true;
+
+  if (titulo.value.length < 5) {
+    titulo.classList.add('is-invalid');
+    titulo.classList.remove('is-valid');
+    document.getElementById('errorTitulo').textContent = 'El título debe tener al menos 5 caracteres.';
+    isValid = false;
+  } else {
+    titulo.classList.remove('is-invalid');
+    titulo.classList.add('is-valid');
+  }
+
+  if (contenido.value.trim() === '') {
+    contenido.classList.add('is-invalid');
+    contenido.classList.remove('is-valid');
+    document.getElementById('errorContenido').textContent = 'El contenido es obligatorio.';
+    isValid = false;
+  } else {
+    contenido.classList.remove('is-invalid');
+    contenido.classList.add('is-valid');
+  }
+
+  return isValid;
+}
+
+function validarFormularioModificar() {
+  const modificarTitulo = document.getElementById('modificarTitulo');
+  const modificarContenido = document.getElementById('modificarContenido');
+  let isValid = true;
+
+  if (modificarTitulo.value.length < 5) {
+    modificarTitulo.classList.add('is-invalid');
+    modificarTitulo.classList.remove('is-valid');
+    document.getElementById('errorModificarTitulo').textContent = 'El título debe tener al menos 5 caracteres.';
+    isValid = false;
+  } else {
+    modificarTitulo.classList.remove('is-invalid');
+    modificarTitulo.classList.add('is-valid');
+  }
+
+  if (modificarContenido.value.trim() === '') {
+    modificarContenido.classList.add('is-invalid');
+    modificarContenido.classList.remove('is-valid');
+    document.getElementById('errorModificarContenido').textContent = 'El contenido es obligatorio.';
+    isValid = false;
+  } else {
+    modificarContenido.classList.remove('is-invalid');
+    modificarContenido.classList.add('is-valid');
+  }
+
+  return isValid;
+}
+</script>
 
 </body>
 </html>
-
-  <!-- Validación del ID de la nota: Se utiliza filter_input con FILTER_VALIDATE_INT para asegurar que 
- el ID de la nota es un entero válido tanto para la eliminación como para la modificación de notas.
- Validación de los campos de título y contenido: Se utiliza filter_input con FILTER_SANITIZE_STRING 
-para limpiar los campos de entrada y asegurar que no contengan caracteres no válidos o peligrosos.
- Mensajes de error: Se añaden mensajes de error si los datos son inválidos para proporcionar retroalimentación al usuario. -->
