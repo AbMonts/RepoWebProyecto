@@ -1,44 +1,32 @@
-function validateForm() {
-  var tituloInput = document.getElementById('titulo');
-  var contenidoInput = document.getElementById('contenido');
-  var fechaInicioInput = document.getElementById('fechainicio');
-  var fechaFinInput = document.getElementById('fechafin');
+function validarFormulario() {
+    var titulo = document.getElementById("titulo").value;
+    var contenido = document.getElementById("contenido").value;
+    var fechafin = document.getElementById("fechafin").value;
+    var errorTitulo = document.querySelector("#titulo + .text-danger");
+    var errorContenido = document.querySelector("#contenido + .text-danger");
+    var errorFechafin = document.querySelector("#fechafin + .text-danger");
+    var errores = [];
 
-  // Validación del campo de título
-  if (tituloInput.value.trim().length < 3 || tituloInput.value.trim().length > 50) {
-    showMessage("El título debe tener entre 3 y 50 caracteres.");
-    return false;
-  }
+    if (titulo.length < 5) {
+        errores.push("El título debe tener al menos 5 caracteres.");
+        errorTitulo.innerText = "El título debe tener al menos 5 caracteres.";
+    } else {
+        errorTitulo.innerText = "";
+    }
 
-  // Validación del campo de contenido
-  if (contenidoInput.value.trim().length < 10) {
-    showMessage("El contenido debe tener al menos 10 caracteres.");
-    return false;
-  }
+    if (contenido.trim() === "") {
+        errores.push("El contenido es obligatorio.");
+        errorContenido.innerText = "El contenido es obligatorio.";
+    } else {
+        errorContenido.innerText = "";
+    }
 
-  // Validación del campo de fecha de inicio y fecha de fin
-  var fechaInicio = new Date(fechaInicioInput.value);
-  var fechaFin = new Date(fechaFinInput.value);
+    if (fechafin.trim() === "") {
+        errores.push("La fecha de fin es obligatoria.");
+        errorFechafin.innerText = "La fecha de fin es obligatoria.";
+    } else {
+        errorFechafin.innerText = "";
+    }
 
-  if (!fechaInicioInput.value || !fechaFinInput.value) {
-    showMessage("Por favor, completa tanto la fecha de inicio como la fecha de fin.");
-    return false;
-  }
-
-  if (fechaInicio >= fechaFin) {
-    showMessage("La fecha de inicio debe ser anterior a la fecha de fin.");
-    return false;
-  }
-
-  return true;
-}
-
-function showMessage(message) {
-  var messageElement = document.createElement('div');
-  messageElement.textContent = message;
-  messageElement.classList.add('alert', 'alert-info');
-  document.body.appendChild(messageElement);
-  setTimeout(function() {
-    messageElement.remove();
-  }, 3000); // Remover el mensaje después de 3 segundos
+    return errores.length === 0;
 }

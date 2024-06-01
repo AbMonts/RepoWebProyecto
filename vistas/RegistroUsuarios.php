@@ -56,40 +56,61 @@
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario->nombre ?? ''); ?>">
+                    <?php if (isset($_SESSION['errores']['nombre'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['nombre']; ?></div>
+                    <?php endif; ?>
                 </div>
                 <div class="mb-3">
                     <label for="apellido1" class="form-label">Primer Apellido</label>
                     <input type="text" class="form-control" id="apellido1" name="apellido1" value="<?php echo htmlspecialchars($usuario->apellido1 ?? ''); ?>">
+                    <?php if (isset($_SESSION['errores']['apellido1'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['apellido1']; ?></div>
+                    <?php endif; ?>
                 </div>
                 <div class="mb-3">
                     <label for="apellido2" class="form-label">Segundo Apellido</label>
                     <input type="text" class="form-control" id="apellido2" name="apellido2" value="<?php echo htmlspecialchars($usuario->apellido2 ?? ''); ?>">
+                    <?php if (isset($_SESSION['errores']['apellido2'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['apellido2']; ?></div>
+                    <?php endif; ?>
                 </div>
                 <div class="mb-3">
                     <label for="correo" class="form-label">Correo</label>
                     <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario->correo ?? ''); ?>">
+                    <?php if (isset($_SESSION['errores']['correo'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['correo']; ?></div>
+                    <?php endif; ?>
                     <span id="correoError" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
                     <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars($usuario->usuario ?? ''); ?>">
+                    <?php if (isset($_SESSION['errores']['usuario'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['usuario']; ?></div>
+                    <?php endif; ?>
                 </div>
                 <div class="mb-3">
                     <label for="rol" class="form-label">Rol</label>
                     <select class="form-control" id="rol" name="rol">
                         <option value="Default">Selecciona un rol</option>
-                        <option value="usuario" <?php echo (isset($usuario->rol) && 
-                        $usuario->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
+                        <option value="usuario" <?php echo (isset($usuario->rol) && $usuario->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
                         <option value="admin" <?php echo (isset($usuario->rol) && $usuario->rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
                     </select>
+                    <?php if (isset($_SESSION['errores']['rol'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['rol']; ?></div>
+                    <?php endif; ?>
                 </div>
                 <div class="mb-3">
                     <label for="contrasena" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($usuario->contrasena ?? ''); ?>">
+                    <?php if (isset($_SESSION['errores']['contrasena'])): ?>
+                        <div class="text-danger"><?php echo $_SESSION['errores']['contrasena']; ?></div>
+                    <?php endif; ?>
                 </div>
                 <a href="listaUsuarios.php" class="btn btn-primary">Regresar</a>
-                <button type="submit" class="btn btn-primary" onclick="return validarFormulario()">Guardar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
             </form>
+
         </div>
     </main>
 

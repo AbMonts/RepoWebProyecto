@@ -1,38 +1,46 @@
+
+
 <?php
 require_once "../datos/DAOTareas.php";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['idTarea']) && is_numeric($_POST['idTarea']) &&
-        isset($_POST['titulo']) &&
-        isset($_POST['contenido']) && isset($_POST['fechainicio']) &&
-        isset($_POST['fechafin'])) {
+$errores = [];
+$titulo = $contenido = $fechainicio = $fechafin = "";
+$isdone = 0;
 
-        $idTarea = $_POST['idTarea'];
-        $titulo = $_POST['titulo'];
-        $contenido = $_POST['contenido'];
-        $fechainicio = $_POST['fechainicio'];
-        $fechafin = $_POST['fechafin'];
-        $isdone = isset($_POST['isdone']) ? 1 : 0;
+// Validar y sanitizar entrada
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $idTarea = isset($_POST['idTarea']) ? intval($_POST['idTarea']) : 0;
 
-        $dao = new DAOTareas();
-        $resultado = $dao->actualizarTarea($idTarea, $titulo, $contenido, $fechainicio, $fechafin, $isdone);
-
-        if ($resultado) {
-            session_start();
-            $_SESSION["msg"] = "alert-success--Tarea actualizada exitosamente";
-        } else {
-            session_start();
-            $_SESSION["msg"] = "alert-danger--Error al actualizar la tarea";
-        }
-
-        header("Location: tareas.php");
-        exit;
+    if (empty($_POST["titulo"]) || strlen($_POST["titulo"]) < 5) {
+        $errores['titulo'] = "El título debe tener al menos 5 caracteres.";
     } else {
-        echo "Datos incompletos";
+        $titulo = htmlspecialchars($_POST["titulo"]);
+    }
+
+    if (empty($_POST["contenido"])) {
+        $errores['contenido'] = "El contenido es obligatorio.";
+    } else {
+        $contenido = htmlspecialchars($_POST["contenido"]);
+    }
+
+    if (empty($_POST["fechafin"])) {
+        $errores['fechafin'] = "La fecha de fin es obligatoria.";
+    } else {
+        $fechafin = $_POST["fechafin"];
+    }
+
+    $fechainicio = !empty($_POST["fechainicio"]) ? $_POST["fechainicio"] : null;
+    $isdone = isset($_POST['isdone']) ? 1 : 0;
+
+    // Si no hay errores, actualizar la tarea
+    if (empty($errores)) {
+        $dao = new DAOTareas();
+        $dao->actualizarTarea($idTarea, $titulo, $contenido, $fechainicio, $fechafin, $isdone);
+        header("Location: Tareas.php");
         exit;
     }
 } else {
-    echo "Método no permitido";
+    header("Location: Tareas.php");
     exit;
 }
 ?>

@@ -1,65 +1,80 @@
 <?php
-require_once '../datos/Conexion.php'; 
-require_once '../modelos/Usuario.php'; 
-require_once '../datos/DAOUsuario.php';
-
 session_start();
+require_once("../datos/DAOUsuario.php");
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validar que se hayan enviado los datos necesarios
-    if (isset($_POST['nombre']) && !empty($_POST['nombre']) &&
-        isset($_POST['apellido1']) && !empty($_POST['apellido1']) &&
-        isset($_POST['apellido2']) && !empty($_POST['apellido2']) &&
-        isset($_POST['correo']) && !empty($_POST['correo']) &&
-        isset($_POST['usuario']) && !empty($_POST['usuario']) &&
-        isset($_POST['rol']) && !empty($_POST['rol']) &&
-        isset($_POST['contrasena']) && !empty($_POST['contrasena'])) {
+// Inicializar variables de error
+$_SESSION['errores'] = [];
 
-        // Obtener los datos del formulario
-        $id = isset($_POST['id']) && is_numeric($_POST['id']) ? $_POST['id'] : null;
-        $nombre = $_POST['nombre'];
-        $apellido1 = $_POST['apellido1'];
-        $apellido2 = $_POST['apellido2'];
-        $correo = $_POST['correo'];
-        $usuario = $_POST['usuario'];
-        $rol = $_POST['rol'];
-        $contrasena = $_POST['contrasena'];
-
-        // Crear una instancia de DAOUsuario y manejar la creación o actualización del usuario
-        $dao = new DAOUsuario();
-        $usuarioObj = new Usuario();
-        $usuarioObj->id = $id;
-        $usuarioObj->nombre = $nombre;
-        $usuarioObj->apellido1 = $apellido1;
-        $usuarioObj->apellido2 = $apellido2;
-        $usuarioObj->correo = $correo;
-        $usuarioObj->usuario = $usuario;
-        $usuarioObj->rol = $rol;
-        $usuarioObj->contrasena = $contrasena;
-
-        if ($id === null) {
-            // Crear nuevo usuario
-            if ($dao->agregar($usuarioObj)) {
-                $_SESSION['msg'] = "alert-success--Usuario creado exitosamente";
-            } else {
-                $_SESSION['msg'] = "alert-danger--Error al crear el usuario";
-            }
-        } else {
-            // Actualizar usuario existente
-            if ($dao->actualizar($usuarioObj)) {
-                $_SESSION['msg'] = "alert-success--Usuario actualizado exitosamente";
-            } else {
-                $_SESSION['msg'] = "alert-danger--Error al actualizar el usuario";
-            }
-        }
-    } else {
-        $_SESSION['msg'] = "alert-danger--Faltan datos requeridos";
+// Función para validar datos de entrada
+function validarDato($dato, $campo, $minLength = 0) {
+    if (empty(trim($dato))) {
+        $_SESSION['errores'][$campo] = "El campo $campo es obligatorio.";
+        return false;
     }
-} else {
-    $_SESSION['msg'] = "alert-danger--Método de solicitud no válido";
+    if (strlen($dato) < $minLength) {
+        $_SESSION['errores'][$campo] = "El campo $campo debe tener al menos $minLength caracteres.";
+        return false;
+    }
+    return true;
 }
 
-// Redirigir de vuelta a la página de lista de usuarios
+// Validar datos del formulario
+$validacion = true;
+$validacion &= validarDato($_POST['nombre'], 'nombre', 3);
+$validacion &= validarDato($_POST['apellido1'], 'apellido1', 3);
+$validacion &= validarDato($_POST['apellido2'], 'apellido2', 3);
+$validacion &= validarDato($_POST['correo'], 'correo');
+
+// Validación adicional para el correo
+if (!filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL)) {
+    $_SESSION['errores']['correo'] = "El formato del correo es inválido.";
+    $validacion = false;
+}
+
+$validacion &= validarDato($_POST['usuario'], 'usuario', 3);
+$validacion &= validarDato($_POST['rol'], 'rol');
+$validacion &= validarDato($_POST['contrasena'], 'contrasena', 6);
+
+// Si la validación falla, redirigir de nuevo al formulario
+if (!$validacion) {
+    header("Location: formulario_usuario.php?id=" . $_POST['id']);
+    exit();
+}
+
+// Si la validación es exitosa, proceder con la lógica de almacenamiento en la base de datos
+$dao = new DAOUsuario();
+if (isset($_POST['id']) && is_numeric($_POST['id'])) {
+    // Editar usuario existente
+    $resultado = $dao->actualizar(new Usuario(
+        $_POST['id'], 
+        $_POST['nombre'], 
+        $_POST['apellido1'], 
+        $_POST['apellido2'], 
+        $_POST['correo'], 
+        $_POST['usuario'], 
+        $_POST['rol'], 
+        $_POST['contrasena']
+    ));
+} else {
+    // Crear nuevo usuario
+    $resultado = $dao->crear(new Usuario(
+        null, 
+        $_POST['nombre'], 
+        $_POST['apellido1'], 
+        $_POST['apellido2'], 
+        $_POST['correo'], 
+        $_POST['usuario'], 
+        $_POST['rol'], 
+        $_POST['contrasena']
+    ));
+}
+
+if ($resultado) {
+    $_SESSION['msg'] = "alert-success--Usuario guardado exitosamente";
+} else {
+    $_SESSION['msg'] = "alert-danger--No se ha podido guardar el usuario. Por favor, inténtelo de nuevo.";
+}
+
 header("Location: listaUsuarios.php");
 exit();
 ?>
