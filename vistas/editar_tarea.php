@@ -24,8 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($fechafin)) {
         $errores['fechafin'] = "La fecha de fin es obligatoria.";
-    } 
-    if ($fechafin < $fechainicio) {
+    } if ($fechafin < $fechainicio) {
         $errores['fechafin'] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
     }
 
@@ -62,7 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -94,34 +92,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mb-3">
             <label for="titulo" class="form-label">Titulo</label>
             <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>" >
-            <?php if (!empty($errores['titulo'])): ?>
-                <span class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></span>
-            <?php endif; ?>
+            <span class="text-danger" id="error-titulo"></span>
         </div>
 
         <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>
             <textarea class="form-control" id="contenido" name="contenido" rows="6"><?php echo htmlspecialchars($contenido); ?></textarea>
-            <?php if (!empty($errores['contenido'])): ?>
-                <span class="text-danger"><?php echo htmlspecialchars($errores['contenido']); ?></span>
-            <?php endif; ?>
+            <span class="text-danger" id="error-contenido"></span>
         </div>
 
         <div class="mb-3">
             <label for="fechainicio" class="form-label">Fecha Inicio</label>
             <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio" value="<?php echo htmlspecialchars($fechainicio); ?>">
+            <span class="text-danger" id="error-fechainicio"></span>
         </div>
 
         <div class="mb-3">
             <label for="fechafin" class="form-label">Fecha Fin</label>
             <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" value="<?php echo htmlspecialchars($fechafin); ?>" required>
-            <?php if (!empty($errores['fechafin'])): ?>
-                <span class="text-danger"><?php echo htmlspecialchars($errores['fechafin']); ?></span>
-            <?php endif; ?>
+            <span class="text-danger" id="error-fechafin"></span>
         </div>
 
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="isdone" name="isdone" <?php echo  $isdone? 'checked' : ''; ?>>
+            <input type="checkbox" class="form-check-input" id="isdone" name="isdone" <?php echo  $isdone ? 'checked' : ''; ?>>
             <label class="form-check-label" for="isdone">¿Completada?</label>
         </div>
 
@@ -132,5 +125,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/editarTareas.js"></script>
 </body>
 </html>

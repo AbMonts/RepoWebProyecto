@@ -170,9 +170,7 @@ class DAOUsuario
 		}finally{
             Conexion::desconectar();
         }
-
-		
-        
+ 
 	}
 
 
@@ -212,41 +210,7 @@ class DAOUsuario
         }
     }
 
-	public function editar(Usuario $obj)
-	{
-		try 
-		{
-			$sql = "UPDATE usuarios
-                    SET
-                    nombre = ?,
-                    apellido1 = ?,
-                    apellido2 = ?,
-                    correo = ?,
-                    genero = ?,
-                    telefono = ?,
-                    contrasenia = sha224(?)
-                    WHERE id = ?;";
-
-            $this->conectar();
-            
-            $sentenciaSQL = $this->conexion->prepare($sql);
-			$sentenciaSQL->execute(
-				array($obj->nombre,
-                      $obj->apellido1,
-                      $obj->apellido2,
-					  $obj->correo,
-					  $obj->id)
-					);
-            return true;
-		} catch (PDOException $e){
-			//Si quieres acceder expecíficamente al numero de error
-			//se puede consultar la propiedad errorInfo
-			return false;
-		}finally{
-            Conexion::desconectar();
-        }
-	}
-
+	
 
     public function obtenerPorId($id)
     {

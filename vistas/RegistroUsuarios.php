@@ -1,19 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrar usuarios</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/estilos.css">
     <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <?php 
         require("menuPrivado.php"); 
@@ -51,43 +46,32 @@
             ?>
 
             <!-- Formulario de edicion -->
-            <form action="guardar_usuario.php" method="post" id="usuarioForm">
+            <form action="guardar_usuario.php" method="post" id="usuarioForm" onsubmit="return validarFormulario()">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario->id ?? ''); ?>">
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario->nombre ?? ''); ?>">
-                    <?php if (isset($_SESSION['errores']['nombre'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['nombre']; ?></div>
-                    <?php endif; ?>
+                    <span id="errorNombre" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="apellido1" class="form-label">Primer Apellido</label>
                     <input type="text" class="form-control" id="apellido1" name="apellido1" value="<?php echo htmlspecialchars($usuario->apellido1 ?? ''); ?>">
-                    <?php if (isset($_SESSION['errores']['apellido1'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['apellido1']; ?></div>
-                    <?php endif; ?>
+                    <span id="errorApellido1" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="apellido2" class="form-label">Segundo Apellido</label>
                     <input type="text" class="form-control" id="apellido2" name="apellido2" value="<?php echo htmlspecialchars($usuario->apellido2 ?? ''); ?>">
-                    <?php if (isset($_SESSION['errores']['apellido2'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['apellido2']; ?></div>
-                    <?php endif; ?>
+                    <span id="errorApellido2" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="correo" class="form-label">Correo</label>
                     <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario->correo ?? ''); ?>">
-                    <?php if (isset($_SESSION['errores']['correo'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['correo']; ?></div>
-                    <?php endif; ?>
                     <span id="correoError" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
                     <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars($usuario->usuario ?? ''); ?>">
-                    <?php if (isset($_SESSION['errores']['usuario'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['usuario']; ?></div>
-                    <?php endif; ?>
+                    <span id="errorUsuario" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="rol" class="form-label">Rol</label>
@@ -96,21 +80,16 @@
                         <option value="usuario" <?php echo (isset($usuario->rol) && $usuario->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
                         <option value="admin" <?php echo (isset($usuario->rol) && $usuario->rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
                     </select>
-                    <?php if (isset($_SESSION['errores']['rol'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['rol']; ?></div>
-                    <?php endif; ?>
+                    <span id="errorRol" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="contrasena" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($usuario->contrasena ?? ''); ?>">
-                    <?php if (isset($_SESSION['errores']['contrasena'])): ?>
-                        <div class="text-danger"><?php echo $_SESSION['errores']['contrasena']; ?></div>
-                    <?php endif; ?>
+                    <span id="errorContrasena" class="text-danger"></span>
                 </div>
                 <a href="listaUsuarios.php" class="btn btn-primary">Regresar</a>
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </form>
-
         </div>
     </main>
 
@@ -118,54 +97,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/registroUsers"></script>
-    <script>
-        document.getElementById("correo").onblur = validarCorreo;
-
-        function validarCorreo() {
-            var correo = document.getElementById("correo").value;
-            var correoError = document.getElementById("correoError");
-
-            // Realizar la solicitud AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "validar_correo.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.valido) {
-                            correoError.textContent = "";
-                        } else {
-                            correoError.textContent = response.mensaje;
-                        }
-                    } else {
-                        correoError.textContent = "Error en la solicitud.";
-                    }
-                }
-            };
-            xhr.send("correo=" + encodeURIComponent(correo));
-        }
-
-        function validarFormulario() {
-            var nombre = document.getElementById("nombre").value.trim();
-            var apellido1 = document.getElementById("apellido1").value.trim();
-            var apellido2 = document.getElementById("apellido2").value.trim();
-            var correo = document.getElementById("correo").value.trim();
-            var usuario = document.getElementById("usuario").value.trim();
-            var rol = document.getElementById("rol").value.trim();
-            var contrasena = document.getElementById("contrasena").value;
-
-            if (nombre === "" || apellido1 === "" || apellido2 === "" || correo === "" || usuario === "" || rol === "" || contrasena === "") {
-          //      alert("Todos los campos son obligatorios.");
-                return false;
-            }
-
-            // Agregar más validaciones según sea necesario
-
-            return true;
-        }
-    </script>
+   
+    <script src="js/registroUsuarios.js"></script>
 </body>
-
 </html>
