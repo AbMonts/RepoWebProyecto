@@ -11,6 +11,7 @@ $data = $_SESSION['data'] ?? [];
 $id = $data['id'] ?? null;
 $nombre = $data['nombre'] ?? "";
 $correo = $data['correo'] ?? "";
+$usuario = $data['usuario'] ?? "";
 $apellido1 = $data['apellido1'] ?? "";
 $apellido2 = $data['apellido2'] ?? "";
 $rol = $data['rol'] ?? "";
@@ -24,6 +25,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         if ($usuarioObj) {
             $nombre = $usuarioObj->nombre;
             $correo = $usuarioObj->correo;
+            $usuario = $usuarioObj->usuario;
             $apellido1 = $usuarioObj->apellido1;
             $apellido2 = $usuarioObj->apellido2;
             $rol = $usuarioObj->rol;
@@ -38,7 +40,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit;
 }
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -52,6 +53,17 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="css/estilos.css">
   <link  href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .is-invalid {
+      border-color: #dc3545;
+    }
+    .is-valid {
+      border-color: #28a745;
+    }
+    .text-danger {
+      font-size: 0.875em;
+    }
+  </style>
 </head>
 <body>
   <?php require("menuPrivado.php"); ?>
@@ -64,28 +76,28 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
           <label for="nombre" class="form-label">Nombre</label>
           <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" >
           <?php if(isset($errores['nombre'])): ?>
-            <span class="text-danger"><?php echo htmlspecialchars($errores['nombre']); ?></span>
+            <span class="text-danger" id="errorNombre"><?php echo htmlspecialchars($errores['nombre']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="correo" class="form-label">Correo</label>
           <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($correo); ?>" >
           <?php if(isset($errores['correo'])): ?>
-            <span class="text-danger"><?php echo htmlspecialchars($errores['correo']); ?></span>
+            <span class="text-danger" id="errorCorreo"><?php echo htmlspecialchars($errores['correo']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="apellido1" class="form-label">Apellido Paterno</label>
           <input type="text" class="form-control" id="apellido1" name="apellido1" value="<?php echo htmlspecialchars($apellido1); ?>" >
           <?php if(isset($errores['apellido1'])): ?>
-            <span class="text-danger"><?php echo htmlspecialchars($errores['apellido1']); ?></span>
+            <span class="text-danger" id="errorApellido1"><?php echo htmlspecialchars($errores['apellido1']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="apellido2" class="form-label">Apellido Materno</label>
           <input type="text" class="form-control" id="apellido2" name="apellido2" value="<?php echo htmlspecialchars($apellido2); ?>">
           <?php if(isset($errores['apellido2'])): ?>
-            <span class="text-danger"><?php echo htmlspecialchars($errores['apellido2']); ?></span>
+            <span class="text-danger" id="errorApellido2"><?php echo htmlspecialchars($errores['apellido2']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
@@ -93,17 +105,17 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
           <select class="form-control" id="rol" name="rol" required>
             <option value="" disabled>Selecciona un rol</option>
             <option value="admin" <?php echo ($rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
-            <option value="user" <?php echo ($rol == 'user') ? 'selected' : ''; ?>>Usuario</option>
+            <option value="usuario" <?php echo ($rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
           </select>
           <?php if(isset($errores['rol'])): ?>
-            <span class="text-danger"><?php echo htmlspecialchars($errores['rol']); ?></span>
+            <span class="text-danger" id="errorRol"><?php echo htmlspecialchars($errores['rol']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="contrasena" class="form-label">Contraseña</label>
           <input type="text" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($contrasena); ?>" required>
           <?php if(isset($errores['contrasena'])): ?>
-            <span class="text-danger"><?php echo htmlspecialchars($errores['contrasena']); ?></span>
+            <span class="text-danger" id="errorContrasena"><?php echo htmlspecialchars($errores['contrasena']); ?></span>
           <?php endif; ?>
         </div>
         <button type="submit" class="btn btn-primary">Guardar</button>
@@ -115,8 +127,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/editarUsuarios.js"></script>
-</body>
-</html>
 <?php
 unset($_SESSION['errores']);
 unset($_SESSION['data']);

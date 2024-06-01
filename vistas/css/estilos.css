@@ -188,3 +188,13 @@ form.validado input:invalid,
     display: flex !important;
     justify-content: center !important;
 }
+
+.is-invalid {
+    border-color: #dc3545;
+  }
+  .is-valid {
+    border-color: #28a745;
+  }
+  .text-danger {
+    font-size: 0.875em;
+  }

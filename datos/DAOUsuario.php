@@ -181,6 +181,7 @@ class DAOUsuario
                     SET
                     nombre = ?,
                     correo = ?,
+                    usuario = ?,
                     apellido1 = ?,
                     apellido2 = ?,
                     rol = ?,
@@ -194,6 +195,7 @@ class DAOUsuario
                 array(
                     $obj->nombre,
                     $obj->correo,
+                    $obj->usuario,
                     $obj->apellido1,
                     $obj->apellido2,
                     $obj->rol,

@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/estilos.css">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .input-error {
+            border-color: red;
+        }
+        .text-danger {
+            font-size: 0.875em;
+        }
+    </style>
 </head>
 <body>
     <?php 
@@ -66,7 +74,7 @@
                 <div class="mb-3">
                     <label for="correo" class="form-label">Correo</label>
                     <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario->correo ?? ''); ?>">
-                    <span id="correoError" class="text-danger"></span>
+                    <span id="errorCorreo" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
@@ -97,7 +105,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-   
     <script src="js/registroUsuarios.js"></script>
 </body>
 </html>
