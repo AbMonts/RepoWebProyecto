@@ -36,29 +36,26 @@ if (empty($usuario->rol)) {
 if (empty($usuario->contrasena)) {
     $errores['contrasena'] = "La contraseña es obligatoria.";
 }
-
 if (count($errores) > 0) {
     $_SESSION['errores'] = $errores;
-    header("Location: listaUsuarios.php?id=" . $usuario->id); //que mande al form de editar o eliminar dependiendo si se recibio un id
+    header("Location: RegistroUsuarios.php?id=" . $usuario->id); // Redirigir al formulario con errores
     exit;
 } else {
     $dao = new DAOUsuario();
-    if ($usuario->id) {
-        // Editar usuario existente
+    if ($usuario->id) { // Editar usuario existente
         if ($dao->actualizar($usuario)) {
             $_SESSION["msg"] = "alert-success--Usuario actualizado exitosamente :D";
         } else {
             $_SESSION["msg"] = "alert-danger--No se ha podido actualizar al usuario :(";
         }
-    } else {
-        // Agregar nuevo usuario
+    } else { // Agregar nuevo usuario
         if ($dao->agregar($usuario)) {
             $_SESSION["msg"] = "alert-success--Usuario agregado exitosamente :D";
         } else {
             $_SESSION["msg"] = "alert-danger--No se ha podido agregar al usuario :(";
         }
     }
-    header("Location: listaUsuarios.php");
+    header("Location: listaUsuarios.php"); // Redirigir a la lista de usuarios
+    exit;
 }
 ?>
-

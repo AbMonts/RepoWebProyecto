@@ -1,12 +1,14 @@
 <?php
+session_start();
 require_once '../datos/Conexion.php';
 require_once '../modelos/Usuario.php';
 require_once '../datos/DAOUsuario.php';
 
-session_start();
+
 
 $errores = $_SESSION['errores'] ?? [];
 $data = $_SESSION['data'] ?? [];
+$id = 0;
 
 $id = $data['id'] ?? null;
 $nombre = $data['nombre'] ?? "";
@@ -17,12 +19,14 @@ $apellido2 = $data['apellido2'] ?? "";
 $rol = $data['rol'] ?? "";
 $contrasena = $data['contrasena'] ?? "";
 
+//var_dump('usuario con id: ' .$_GET['id']);
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+  //var_dump('se entro al if con : ' .$_GET['id']);
     $id = $_GET['id'];
-    if (empty($data)) {
+    //var_dump('el id declarado es : '.$id );
         $dao = new DAOUsuario();
         $usuarioObj = $dao->obtenerPorId($id);
-        if ($usuarioObj) {
+
             $nombre = $usuarioObj->nombre;
             $correo = $usuarioObj->correo;
             $usuario = $usuarioObj->usuario;
@@ -30,11 +34,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $apellido2 = $usuarioObj->apellido2;
             $rol = $usuarioObj->rol;
             $contrasena = $usuarioObj->contrasena;
-        } else {
-            echo "No se encontró el usuario con ID: " . htmlspecialchars($id);
-            exit;
-        }
-    }
+            
+       // var_dump('/nAfuera del if'.$nombre, $correo, $usuario, $apellido1, $apellido2, $rol, $contrasena);
 } else {
     echo "ID de usuario no válido";
     exit;
@@ -75,28 +76,32 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         <div class="mb-3">
           <label for="nombre" class="form-label">Nombre</label>
           <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" >
-          <?php if(isset($errores['nombre'])): ?>
+          <span id="errorNombre" class="text-danger"></span>
+          <?php if (isset($errores['nombre'])): ?>
             <span class="text-danger" id="errorNombre"><?php echo htmlspecialchars($errores['nombre']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="correo" class="form-label">Correo</label>
           <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($correo); ?>" >
-          <?php if(isset($errores['correo'])): ?>
+          <span id="errorCorreo" class="text-danger"></span>
+          <?php if (isset($errores['correo'])): ?>
             <span class="text-danger" id="errorCorreo"><?php echo htmlspecialchars($errores['correo']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="apellido1" class="form-label">Apellido Paterno</label>
           <input type="text" class="form-control" id="apellido1" name="apellido1" value="<?php echo htmlspecialchars($apellido1); ?>" >
-          <?php if(isset($errores['apellido1'])): ?>
+          <span id="errorApellido1" class="text-danger"></span>
+          <?php if (isset($errores['apellido1'])): ?>
             <span class="text-danger" id="errorApellido1"><?php echo htmlspecialchars($errores['apellido1']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="apellido2" class="form-label">Apellido Materno</label>
           <input type="text" class="form-control" id="apellido2" name="apellido2" value="<?php echo htmlspecialchars($apellido2); ?>">
-          <?php if(isset($errores['apellido2'])): ?>
+          <span id="errorApellido2" class="text-danger"></span>
+          <?php if (isset($errores['apellido2'])): ?>
             <span class="text-danger" id="errorApellido2"><?php echo htmlspecialchars($errores['apellido2']); ?></span>
           <?php endif; ?>
         </div>
@@ -107,14 +112,16 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <option value="admin" <?php echo ($rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
             <option value="usuario" <?php echo ($rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
           </select>
-          <?php if(isset($errores['rol'])): ?>
+          <span id="errorRol" class="text-danger"></span>
+          <?php if (isset($errores['rol'])): ?>
             <span class="text-danger" id="errorRol"><?php echo htmlspecialchars($errores['rol']); ?></span>
           <?php endif; ?>
         </div>
         <div class="mb-3">
           <label for="contrasena" class="form-label">Contraseña</label>
           <input type="text" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($contrasena); ?>" required>
-          <?php if(isset($errores['contrasena'])): ?>
+          <span id="errorContrasena" class="text-danger"></span>
+          <?php if (isset($errores['contrasena'])): ?>
             <span class="text-danger" id="errorContrasena"><?php echo htmlspecialchars($errores['contrasena']); ?></span>
           <?php endif; ?>
         </div>
@@ -127,7 +134,5 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/editarUsuarios.js"></script>
-<?php
-unset($_SESSION['errores']);
-unset($_SESSION['data']);
-?>
+</body>
+</html>

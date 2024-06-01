@@ -239,7 +239,7 @@ class DAOUsuario
                 $obj->rol = $fila->rol;
                 $obj->contrasena = $fila->contrasena;
             }
-           
+           // var_dump($obj);
             return $obj;
         } catch(Exception $e) {
             return null;
