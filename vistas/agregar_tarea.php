@@ -47,7 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -60,6 +59,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/estilos.css">
     <script src="js/validarFormulario.js" defer></script>
+    <style>
+        .is-invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .is-valid {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+    </style>
 </head>
 <body>
 
@@ -75,25 +84,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form action="agregar_tarea.php" method="POST" onsubmit="return validarFormulario();">
         <div class="mb-3">
             <label for="titulo" class="form-label">Titulo</label>
-            <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>">
-            <span class="text-danger" id="error-titulo"></span>
+            <input type="text" class="form-control <?php echo !empty($errores['titulo']) ? 'is-invalid' : ''; ?>" id="titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>">
+            <span class="text-danger" id="error-titulo"><?php echo htmlspecialchars($errores['titulo'] ?? ''); ?></span>
         </div>
         <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>
-            <textarea class="form-control" id="contenido" name="contenido" rows="10"><?php echo htmlspecialchars($contenido); ?></textarea>
-            <span class="text-danger" id="error-contenido"></span>
+            <textarea class="form-control <?php echo !empty($errores['contenido']) ? 'is-invalid' : ''; ?>" id="contenido" name="contenido" rows="10"><?php echo htmlspecialchars($contenido); ?></textarea>
+            <span class="text-danger" id="error-contenido"><?php echo htmlspecialchars($errores['contenido'] ?? ''); ?></span>
         </div>
 
         <div class="mb-3">
             <label for="fechainicio" class="form-label">Fecha Inicio</label>
-            <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio" value="<?php echo htmlspecialchars($fechainicio); ?>">
-            <span class="text-danger" id="error-fechainicio"></span>
+            <input type="datetime-local" class="form-control <?php echo !empty($errores['fechainicio']) ? 'is-invalid' : ''; ?>" id="fechainicio" name="fechainicio" value="<?php echo htmlspecialchars($fechainicio); ?>">
+            <span class="text-danger" id="error-fechainicio"><?php echo htmlspecialchars($errores['fechainicio'] ?? ''); ?></span>
         </div>
 
         <div class="mb-3">
             <label for="fechafin" class="form-label">Fecha Fin</label>
-            <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" value="<?php echo htmlspecialchars($fechafin); ?>">
-            <span class="text-danger" id="error-fechafin"></span>
+            <input type="datetime-local" class="form-control <?php echo !empty($errores['fechafin']) ? 'is-invalid' : ''; ?>" id="fechafin" name="fechafin" value="<?php echo htmlspecialchars($fechafin); ?>">
+            <span class="text-danger" id="error-fechafin"><?php echo htmlspecialchars($errores['fechafin'] ?? ''); ?></span>
         </div>
 
         <input type="hidden" name="usuarioId" value="<?php echo htmlspecialchars($usuarioId); ?>">
@@ -106,6 +115,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/agregarTarea.js"></script>
-
 </body>
 </html>

@@ -11,8 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contenido = trim($_POST['contenido']);
     $fechainicio = trim($_POST['fechainicio']);
     $fechafin = trim($_POST['fechafin']);
-    $isdone = trim($_POST['isdone']) ? 1 : 0;
-    
+    $isdone = isset($_POST['isdone']) ? 1 : 0;
 
     if (strlen($titulo) < 5) {
         $errores['titulo'] = "El título debe tener al menos 5 caracteres.";
@@ -22,15 +21,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores['contenido'] = "El contenido es obligatorio.";
     }
 
+    if (empty($fechainicio)) {
+        $errores['fechainicio'] = "La fecha de inicio es obligatoria.";
+    }
+
     if (empty($fechafin)) {
         $errores['fechafin'] = "La fecha de fin es obligatoria.";
-    } if ($fechafin < $fechainicio) {
+    } elseif ($fechafin < $fechainicio) {
         $errores['fechafin'] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
     }
 
     if (empty($errores)) {
         $dao = new DAOTareas();
-        $actualizada = $dao->actualizarTarea($idTarea, $titulo, $contenido, $fechainicio, $fechafin,  $isdone);
+        $actualizada = $dao->actualizarTarea($idTarea, $titulo, $contenido, $fechainicio, $fechafin, $isdone);
 
         if ($actualizada) {
             header('Location: Tareas.php');
@@ -61,6 +64,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -75,6 +80,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/estilos.css">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="js/validarFormulario.js" defer></script>
+    <style>
+        .is-invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .is-valid {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+    </style>
 </head>
 <body>
 <?php require("menuPrivado.php"); ?>
@@ -91,30 +106,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="mb-3">
             <label for="titulo" class="form-label">Titulo</label>
-            <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>" >
-            <span class="text-danger" id="error-titulo"></span>
+            <input type="text" class="form-control <?php echo !empty($errores['titulo']) ? 'is-invalid' : ''; ?>" id="titulo" name="titulo" value="<?php echo htmlspecialchars($titulo); ?>">
+            <span class="text-danger" id="error-titulo"><?php echo htmlspecialchars($errores['titulo'] ?? ''); ?></span>
         </div>
 
         <div class="mb-3">
             <label for="contenido" class="form-label">Contenido</label>
-            <textarea class="form-control" id="contenido" name="contenido" rows="6"><?php echo htmlspecialchars($contenido); ?></textarea>
-            <span class="text-danger" id="error-contenido"></span>
+            <textarea class="form-control <?php echo !empty($errores['contenido']) ? 'is-invalid' : ''; ?>" id="contenido" name="contenido" rows="6"><?php echo htmlspecialchars($contenido); ?></textarea>
+            <span class="text-danger" id="error-contenido"><?php echo htmlspecialchars($errores['contenido'] ?? ''); ?></span>
         </div>
 
         <div class="mb-3">
             <label for="fechainicio" class="form-label">Fecha Inicio</label>
-            <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio" value="<?php echo htmlspecialchars($fechainicio); ?>">
-            <span class="text-danger" id="error-fechainicio"></span>
+            <input type="datetime-local" class="form-control <?php echo !empty($errores['fechainicio']) ? 'is-invalid' : ''; ?>" id="fechainicio" name="fechainicio" value="<?php echo htmlspecialchars($fechainicio); ?>">
+            <span class="text-danger" id="error-fechainicio"><?php echo htmlspecialchars($errores['fechainicio'] ?? ''); ?></span>
         </div>
 
         <div class="mb-3">
             <label for="fechafin" class="form-label">Fecha Fin</label>
-            <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" value="<?php echo htmlspecialchars($fechafin); ?>" required>
-            <span class="text-danger" id="error-fechafin"></span>
+            <input type="datetime-local" class="form-control <?php echo !empty($errores['fechafin']) ? 'is-invalid' : ''; ?>" id="fechafin" name="fechafin" value="<?php echo htmlspecialchars($fechafin); ?>">
+            <span class="text-danger" id="error-fechafin"><?php echo htmlspecialchars($errores['fechafin'] ?? ''); ?></span>
         </div>
 
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="isdone" name="isdone" <?php echo  $isdone ? 'checked' : ''; ?>>
+            <input type="checkbox" class="form-check-input" id="isdone" name="isdone" <?php echo $isdone ? 'checked' : ''; ?>>
             <label class="form-check-label" for="isdone">¿Completada?</label>
         </div>
 
