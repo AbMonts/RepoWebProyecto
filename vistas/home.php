@@ -1,26 +1,34 @@
 <?php
 session_start();
 require("menuPrivado.php");
+//con fecha fin, fecha inicio y fecha actual se determinara el tiempo que queda
+function calcularTiempoRestante($fechaInicio, $fechaFin) {
+  $fechaInicio = new DateTime($fechaInicio);
+  $fechaFin = new DateTime($fechaFin);
+  $fechaActual = new DateTime();
 
-function calcularTiempoRestante($fechafin) {
-    $fechaFin = new DateTime($fechafin);
-    $fechaActual = new DateTime();
-    $intervalo = $fechaActual->diff($fechaFin);
-    $diasRestantes = $intervalo->days;
+  $intervaloTotal = $fechaInicio->diff($fechaFin);
+  $intervaloRestante = $fechaActual->diff($fechaFin);
 
-    // Calcular el porcentaje de tiempo restante (para la barra de progreso)
-    $totalDias = (new DateTime($fechafin))->diff(new DateTime())->days;
-    
-    if ($totalDias == 0) {
-        $porcentajeRestante = 10; // Si no hay días restantes, aseguramos que el porcentaje mínimo sea 10%
-    } else {
-        $porcentajeRestante = ($diasRestantes / $totalDias) * 90; // Máximo porcentaje 90%
-        if ($porcentajeRestante < 10) {
-            $porcentajeRestante = 10; // Porcentaje mínimo de 10%
-        }
-    }
+  $totalDias = $intervaloTotal->days;
+$diasRestantes = $intervaloRestante->days;
 
-    return [$diasRestantes, $porcentajeRestante];
+// Ajustar $totalDias a 1 si es igual a 0
+if ($totalDias == 0) {
+    $totalDias = 1;
+}
+
+$porcentajeRestante = 100 - (($diasRestantes / $totalDias) * 100);
+ //A;adir que por defecto totalDias sea 1
+
+  // Asegurarse de que el porcentaje esté en el rango de 0 a 100
+  if ($porcentajeRestante < 0) {
+      $porcentajeRestante = 0;
+  } elseif ($porcentajeRestante > 100) {
+      $porcentajeRestante = 100;
+  }
+
+  return [$diasRestantes, $porcentajeRestante];
 }
 ?>
 
@@ -33,6 +41,7 @@ function calcularTiempoRestante($fechafin) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="css/estilos.css">
+  <link  href="css/bootstrap.min.css" rel="stylesheet">
   <style>
     .card-container {
       position: absolute;
@@ -135,37 +144,31 @@ function calcularTiempoRestante($fechafin) {
     $daoEvento = new DAOEvento();
     $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
     ?>
-    <div class="container mt-5 mx-5">
-      <div class="card card-item" id="cardEvents">
-        <div class="card-header">
-          Eventos de este Mes
+    <div class="card-body toast-container py-5">
+    <?php foreach ($eventos as $evento):
+        list($diasRestantes, $porcentajeRestante) = calcularTiempoRestante($evento->fechainicio, $evento->fechafin);
+    ?>
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto"><?php echo htmlspecialchars($evento->titulo); ?></strong>
+            <small class="text-muted"><?php echo htmlspecialchars($evento->fechainicio); ?></small>
         </div>
-        <div class="card-body toast-container py-5">
-          <?php foreach ($eventos as $evento):
-              list($diasRestantes, $porcentajeRestante) = calcularTiempoRestante($evento->fechafin);
-          ?>
-          <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-              <strong class="me-auto"><?php echo htmlspecialchars($evento->titulo); ?></strong>
-              <small class="text-muted"><?php echo htmlspecialchars($evento->fechainicio); ?></small>
+        <div class="toast-body">
+            <?php echo htmlspecialchars($evento->descripcion); ?>
+            <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
+            <div class="progress mt-2">
+                <div class="progress-bar" role="progressbar" style="width: <?php echo $porcentajeRestante; ?>%;" aria-valuenow="<?php echo $porcentajeRestante; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($porcentajeRestante, 2); ?>%</div>
             </div>
-            <div class="toast-body">
-              <?php echo htmlspecialchars($evento->descripcion); ?>
-              <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
-              <div class="progress mt-2">
-                <div class="progress-bar" role="progressbar" style="width: <?php echo $porcentajeRestante; ?>%;" aria-valuenow="<?php echo $porcentajeRestante; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $porcentajeRestante; ?>%</div>
-              </div>
-            </div>
-          </div>
-          <?php endforeach; ?>
         </div>
-      </div>
     </div>
+    <?php endforeach; ?>
+</div>
   <?php endif; ?>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-aoe/iQpD+qJJQljWkHD9E3qu9IqSwDoF7ub5i+4/0EGdtKYYeq7iLZPzVwW2wsUh" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-QT3ZpjKwiIk1A7oTOQo4avczWYXtmfA2jGFuDA1jOBPpJ2VeQIYFE5ppQL0N6gCV" crossorigin="anonymous"></script>
-
+<script src="js/login.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

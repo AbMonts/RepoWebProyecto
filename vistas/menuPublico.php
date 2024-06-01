@@ -21,17 +21,20 @@
                             <li>
                                 <a class="dropdown-item" href="#">Tarea: Una tarea es una actividad específica que debe completarse dentro de un período de tiempo determinado.</a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Evento: Un  evento es una ocasiòn o acontesimiento en un lugar y periodo determinado.</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">Recursos</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Visual Studio</a></li>
-                            <li><a class="dropdown-item" href="#">Bootstrap</a></li>
-                            <li><a class="dropdown-item" href="#">XAMPP</a></li>
-                            <li><a class="dropdown-item" href="#">pgAdmin</a></li>
-                            <li><a class="dropdown-item" href="#">FlexBox</a></li>
+                        <li><a class="dropdown-item" href="https://code.visualstudio.com/Download" target="_blank">Visual Studio</a></li>
+                            <li><a class="dropdown-item" href="https://getbootstrap.com" target="_blank">Bootstrap</a></li>
+                            <li><a class="dropdown-item" href="https://www.apachefriends.org/download.html" target="_blank">XAMPP</a></li>
+                            <li><a class="dropdown-item" href="https://www.postgresql.org/download/" target="_blank">pgAdmin</a></li>
+                            <li><a class="dropdown-item" href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" target="_blank">FlexBox</a></li>
                         </ul>
                     </li>
 
@@ -40,7 +43,7 @@
                            aria-expanded="false">Conoce más</a>
                         <ul class="dropdown-menu">
                             <li> <!-- Poner el enlace del repositorio    -->
-                                <a class="dropdown-item" href="https://github.com/tu-repo" target="_blank">Visita nuestro GitHub</a> 
+                            <a class="dropdown-item" href="https://github.com/AbMonts/RepoWebProyecto" target="_blank">Visita nuestro GitHub</a> 
                             </li>
                         </ul>
                     </li>
@@ -57,3 +60,4 @@
 </header>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>

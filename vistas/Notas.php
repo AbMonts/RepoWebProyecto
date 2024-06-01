@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,25 +27,36 @@
     $idUsuario = $_SESSION['id']; 
     $notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['eliminarNotaId'])) {
-        $notaId = $_POST['eliminarNotaId'];
-        $resultado = $daoNotas->eliminarNota($notaId);
-        if ($resultado) {
-            echo "<div class='alert alert-success'>La nota ha sido eliminada exitosamente.</div>";
-        } else {
-            echo "<div class='alert alert-danger'>No se pudo eliminar la nota.</div>";
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['eliminarNotaId'])) {
+            $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
+            if ($notaId) {
+                $resultado = $daoNotas->eliminarNota($notaId);
+                if ($resultado) {
+                    echo "<div class='alert alert-success'>La nota ha sido eliminada exitosamente.</div>";
+                } else {
+                    echo "<div class='alert alert-danger'>No se pudo eliminar la nota.</div>";
+                }
+            } else {
+                echo "<div class='alert alert-danger'>ID de nota inválido.</div>";
+            }
         }
-    }
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['modificarNotaId'])) {
-        $notaId = $_POST['modificarNotaId'];
-        $titulo = $_POST['titulo'];
-        $contenido = $_POST['contenido'];
-        $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
-        if ($resultado) {
-            echo "<div class='alert alert-success'>La nota ha sido modificada exitosamente.</div>";
-        } else {
-            echo "<div class='alert alert-danger'>No se pudo modificar la nota.</div>";
+        if (isset($_POST['modificarNotaId'])) {
+            $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
+            $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+            $contenido = filter_input(INPUT_POST, 'contenido', FILTER_SANITIZE_STRING);
+
+            if ($notaId && $titulo && $contenido) {
+                $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
+                if ($resultado) {
+                    echo "<div class='alert alert-success'>La nota ha sido modificada exitosamente.</div>";
+                } else {
+                    echo "<div class='alert alert-danger'>No se pudo modificar la nota.</div>";
+                }
+            } else {
+                echo "<div class='alert alert-danger'>Datos inválidos para modificar la nota.</div>";
+            }
         }
     }
   ?>
@@ -120,7 +132,7 @@
             <label for="archivoNota" class="form-label">O cargar desde archivo</label>
             <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
           </div>
-          <input type="hidden" name="idUsuario" value="<?php echo $idUsuario; ?>">
+          <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($idUsuario); ?>">
           <button type="submit" class="btn btn-primary">Guardar Nota</button>
         </form>
       </div>
@@ -176,37 +188,15 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', (event) => {
-    new Sortable(document.getElementById('notasContainer'), {
-      animation: 150,
-      ghostClass: 'bg-light'
-    });
-  });
-
-  function confirmarEliminarNota(id) {
-    const eliminarNotaIdInput = document.getElementById('eliminarNotaId');
-    eliminarNotaIdInput.value = id;
-    const confirmarEliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
-    confirmarEliminarModal.show();
-  }
-
-  function modificarNota(id, titulo, contenido) {
-    const modificarNotaIdInput = document.getElementById('modificarNotaId');
-    const modificarTituloInput = document.getElementById('modificarTitulo');
-    const modificarContenidoInput = document.getElementById('modificarContenido');
-
-    modificarNotaIdInput.value = id;
-    modificarTituloInput.value = titulo;
-    modificarContenidoInput.value = contenido;
-
-    const modificarNotaModal = new bootstrap.Modal(document.getElementById('modificarNotaModal'));
-    modificarNotaModal.show();
-  }
-</script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/notas.js"></script>
 
 </body>
 </html>
+
+  <!-- Validación del ID de la nota: Se utiliza filter_input con FILTER_VALIDATE_INT para asegurar que 
+ el ID de la nota es un entero válido tanto para la eliminación como para la modificación de notas.
+ Validación de los campos de título y contenido: Se utiliza filter_input con FILTER_SANITIZE_STRING 
+para limpiar los campos de entrada y asegurar que no contengan caracteres no válidos o peligrosos.
+ Mensajes de error: Se añaden mensajes de error si los datos son inválidos para proporcionar retroalimentación al usuario. -->

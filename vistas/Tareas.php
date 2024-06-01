@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tareas</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9oFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -31,13 +31,18 @@
       exit;
     }
 
-    if (isset($_POST["id"]) && is_numeric($_POST["id"])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["id"]) && is_numeric($_POST["id"])) {
       require_once "../datos/DAOTareas.php";
-      $dao = new DAOTareas();
-      if ($dao->eliminarTarea($_POST["id"])) {
-        $_SESSION["msg"] = "alert-success--Tarea eliminada exitosamente";
+      $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+      if ($id === false) {
+        echo "<div class='alert alert-danger'>ID de tarea inválido</div>";
       } else {
-        $_SESSION["msg"] = "alert-danger--No se ha podido eliminar la tarea seleccionada";
+        $dao = new DAOTareas();
+        if ($dao->eliminarTarea($id)) {
+          $_SESSION["msg"] = "alert-success--Tarea eliminada exitosamente";
+        } else {
+          $_SESSION["msg"] = "alert-danger--No se ha podido eliminar la tarea seleccionada";
+        }
       }
     }
 
@@ -94,7 +99,7 @@
                     <div class="card">
                       <div class="card-header" id="headingPorHacer<?php echo $index; ?>">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePorHacer<?php echo $index; ?>" aria-expanded="false" aria-controls="collapsePorHacer<?php echo $index; ?>">
-                          <input type="checkbox" class="me-2" aria-label="Checkbox for following text input" <?php echo $tarea->isdone ? 'checked' : ''; ?>>
+                          <!-- <input type="checkbox" class="me-2" aria-label="Checkbox for following text input" <?php echo $tarea->isdone ? 'checked' : ''; ?>> -->
                           <?php echo htmlspecialchars($tarea->titulo); ?>
                         </button>
                       </div>
@@ -136,7 +141,7 @@
                     <div class="card">
                       <div class="card-header" id="headingHechas<?php echo $index; ?>">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHechas<?php echo $index; ?>" aria-expanded="false" aria-controls="collapseHechas<?php echo $index; ?>">
-                          <input type="checkbox" class="me-2" aria-label="Checkbox for following text input" <?php echo $tarea->isdone ? 'checked' : ''; ?>>
+                          <!-- <input type="checkbox" class="me-2" aria-label="Checkbox for following text input" <?php echo $tarea->isdone ? 'checked' : ''; ?>> -->
                           <?php echo htmlspecialchars($tarea->titulo); ?>
                         </button>
                       </div>
@@ -163,8 +168,6 @@
         </div>
       </div>
     </div>
-
-   
 
     <!-- Modal de confirmación para eliminar tarea -->
     <div class="modal fade" id="mdlEliminar" tabindex="-1" aria-labelledby="mdlEliminarLabel" aria-hidden="true">
@@ -203,5 +206,6 @@
       });
     </script>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/tareas.js">
 </body>
 </html>

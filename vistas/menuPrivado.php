@@ -1,10 +1,10 @@
 <?php
-// Iniciar la sesión si no está ya iniciada
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Redirigir a index.php si no se ha iniciado sesión
+// llevar a index.php si no se ha iniciado sesión
 if (!isset($_SESSION["id"])) {
     header('Location: index.php');
     exit;
@@ -16,11 +16,6 @@ $usuarioRol = isset($_SESSION["rol"]) ? $_SESSION["rol"] : null;
 // Obtener el nombre del archivo actual
 $currentFile = basename($_SERVER['PHP_SELF']);
 
-// // Depuración: Verifica los valores de la sesión
-// // Esto debería comentarse o eliminarse en producción
-// echo "Usuario ID: " . $usuarioId . "<br>";
-// echo "Usuario Rol: " . $usuarioRol . "<br>";
-// echo "Archivo Actual: " . $currentFile . "<br>";
 ?>
 
 <header>
@@ -77,3 +72,4 @@ $currentFile = basename($_SERVER['PHP_SELF']);
 </header>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>

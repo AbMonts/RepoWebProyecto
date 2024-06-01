@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("correo").onblur = e => validarCorreoDisponible(e);
 
   form.addEventListener("submit", e => {
-    let alert = form.querySelector(".alert");
-    if (alert) alert.remove();
+    let messageElement = form.querySelector(".mensaje");
+    if (messageElement) messageElement.remove();
 
     form.classList.add("validado");
 
@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!nombre.checkValidity() || !apellido1.checkValidity() || !correo.checkValidity() ||
         !usuario.checkValidity() || !contrasena.checkValidity()) {
       e.preventDefault();
+      showMessage("Todos los campos son requeridos y deben ser válidos.");
     }
   });
 });
@@ -66,6 +67,7 @@ function validarCorreoDisponible(e) {
           if (response.error) {
             txt.setCustomValidity(response.message);
             txt.classList.add("novalido");
+            showMessage(response.message);
           } else {
             txt.setCustomValidity("");
             txt.classList.add("valido");
@@ -80,6 +82,17 @@ function validarCorreoDisponible(e) {
     txt.setCustomValidity("Campo no válido");
     txt.classList.remove("valido");
     txt.classList.add("novalido");
+    showMessage("El correo electrónico no es válido.");
   }
 
+}
+
+function showMessage(message) {
+  var messageElement = document.createElement('div');
+  messageElement.textContent = message;
+  messageElement.classList.add('mensaje', 'alert', 'alert-info');
+  form.appendChild(messageElement);
+  setTimeout(function() {
+      messageElement.remove();
+  }, 3000); // Remover el mensaje después de 3 segundos
 }

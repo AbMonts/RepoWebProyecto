@@ -36,10 +36,10 @@ class DAOUsuario
             $sentenciaSQL->execute([$correo]);
             $fila = $sentenciaSQL->fetch(PDO::FETCH_OBJ);
             
-            var_dump($fila);
+            //var_dump($fila);
     
             if ($fila) {
-                var_dump($password, $fila->contrasena);
+                //var_dump($password, $fila->contrasena);
                 if ($password === $fila->contrasena) { // Verificación directa de la contraseña (no recomendado)
                     $obj = new Usuario();
                     $obj->id = $fila->id;

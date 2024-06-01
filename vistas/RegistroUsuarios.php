@@ -50,7 +50,7 @@
                 }
             ?>
 
-            <!-- Formulario de edición -->
+            <!-- Formulario de edicion -->
             <form action="guardar_usuario.php" method="post" id="usuarioForm">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario->id ?? ''); ?>">
                 <div class="mb-3">
@@ -78,7 +78,8 @@
                     <label for="rol" class="form-label">Rol</label>
                     <select class="form-control" id="rol" name="rol">
                         <option value="Default">Selecciona un rol</option>
-                        <option value="usuario" <?php echo (isset($usuario->rol) && $usuario->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
+                        <option value="usuario" <?php echo (isset($usuario->rol) && 
+                        $usuario->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
                         <option value="admin" <?php echo (isset($usuario->rol) && $usuario->rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
                     </select>
                 </div>
@@ -87,7 +88,7 @@
                     <input type="password" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($usuario->contrasena ?? ''); ?>">
                 </div>
                 <a href="listaUsuarios.php" class="btn btn-primary">Regresar</a>
-                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="submit" class="btn btn-primary" onclick="return validarFormulario()">Guardar</button>
             </form>
         </div>
     </main>
@@ -95,6 +96,8 @@
     <?php require("pie.php"); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/registroUsers"></script>
     <script>
         document.getElementById("correo").onblur = validarCorreo;
 
@@ -121,6 +124,25 @@
                 }
             };
             xhr.send("correo=" + encodeURIComponent(correo));
+        }
+
+        function validarFormulario() {
+            var nombre = document.getElementById("nombre").value.trim();
+            var apellido1 = document.getElementById("apellido1").value.trim();
+            var apellido2 = document.getElementById("apellido2").value.trim();
+            var correo = document.getElementById("correo").value.trim();
+            var usuario = document.getElementById("usuario").value.trim();
+            var rol = document.getElementById("rol").value.trim();
+            var contrasena = document.getElementById("contrasena").value;
+
+            if (nombre === "" || apellido1 === "" || apellido2 === "" || correo === "" || usuario === "" || rol === "" || contrasena === "") {
+          //      alert("Todos los campos son obligatorios.");
+                return false;
+            }
+
+            // Agregar más validaciones según sea necesario
+
+            return true;
         }
     </script>
 </body>

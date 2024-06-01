@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert.remove();
         }
 
-        e.target.form.classList.add("validado");
+        e.target.form.classList.add("validado"); //al dar acepta se valida automaticamente o muestra signos de validacion
 
         let txtContrasenia = document.getElementById("txtPassword");
         let txtEmail = document.getElementById("txtEmail");

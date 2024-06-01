@@ -31,7 +31,7 @@ $usuarioId = $_SESSION["id"];
     <h2>Agregar Nueva Tarea</h2>
     <form action="procesar_agregar_tarea.php" method="POST">
         <div class="mb-3">
-            <label for="titulo" class="form-label">Título</label>
+            <label for="titulo" class="form-label">Titulo</label>
             <input type="text" class="form-control" id="titulo" name="titulo" required>
         </div>
         <div class="mb-3">
@@ -57,5 +57,6 @@ $usuarioId = $_SESSION["id"];
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

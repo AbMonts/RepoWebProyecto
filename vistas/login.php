@@ -1,8 +1,7 @@
 <?php
-// Always start with session_start() at the very top
+
 session_start();
 
-// Include required files and initialize variables
 require_once "../datos/DAOUsuario.php";
 
 
@@ -30,19 +29,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mensaje_error = "El correo o la contraseña son incorrectos.";
         }
     } else {
-        $form_validado = "validado";
+        $form_validado = "validado";//para usar java script
         $mensaje_error = "Por favor, ingrese un correo válido y una contraseña.";
     }
 }
 
-//Mover aquí
 require("menuPublico.php");
 
 
 
-
-
-// The HTML output starts here
 ?>
 <!doctype html>
 <html lang="en">
@@ -60,12 +55,9 @@ require("menuPublico.php");
 
 <body>
     <?php
-    // Include the navigation menu
-    //require("menuPublico.php");
-    
-    // If there was an error, display it here
+ 
     if ($error) {
-        echo "<div class='alert alert-danger'>$mensaje_error</div>";
+        echo "<div class='alert alert-danger'>$mensaje_error</div>"; //mensage paraver por lado del servidor
     }
     ?>
     <main class="d-flex">
@@ -112,6 +104,7 @@ require("menuPublico.php");
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"
         integrity="sha512-GWzVrcGlo0TxTRvz9ttioyYJ+Wwk9Ck0G81D+eO63BaqHaJ3YZX9wuqjwgfcV/MrB2PhaVX9DkYVhbFpStnqpQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/login.js"></script>
 </body>
 

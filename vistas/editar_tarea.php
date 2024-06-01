@@ -13,7 +13,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit;
     }
 } else {
-    echo "ID de tarea no válido";
+    echo "ID de tarea no valido";
     exit;
 }
 ?>
@@ -41,7 +41,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         <input type="hidden" name="idTarea" value="<?php echo htmlspecialchars($tarea->id); ?>">
 
         <div class="mb-3">
-            <label for="titulo" class="form-label">Título</label>
+            <label for="titulo" class="form-label">Titulo</label>
             <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo htmlspecialchars($tarea->titulo); ?>" required>
         </div>
 
@@ -72,5 +72,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

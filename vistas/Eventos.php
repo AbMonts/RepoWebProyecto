@@ -19,40 +19,55 @@ if (!$eventos) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['eliminarEventoId'])) {
-        $eventoId = $_POST['eliminarEventoId'];
-        $resultado = $dao->eliminar($eventoId);
-        if ($resultado) {
-            $_SESSION['mensaje'] = 'El evento ha sido eliminado exitosamente.';
+        $eventoId = filter_input(INPUT_POST, 'eliminarEventoId', FILTER_VALIDATE_INT);
+        if ($eventoId) {
+            $resultado = $dao->eliminar($eventoId);
+            if ($resultado) {
+                $_SESSION['mensaje'] = 'El evento ha sido eliminado exitosamente.';
+            } else {
+                $_SESSION['mensaje'] = 'No se pudo eliminar el evento.';
+            }
         } else {
-            $_SESSION['mensaje'] = 'No se pudo eliminar el evento.';
+            $_SESSION['mensaje'] = 'ID de evento inválido.';
         }
         header('Location: Eventos.php');
         exit;
     } elseif (isset($_POST['modificarEventoId'])) {
-        $eventoId = $_POST['modificarEventoId'];
-        $titulo = $_POST['titulo'];
-        $descripcion = $_POST['descripcion'];
-        $fechainicio = $_POST['fechainicio'];
-        $fechafin = $_POST['fechafin'];
-        $idUsuario = $_POST['idUsuario'];
-        $resultado = $dao->actualizar($eventoId, $titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
-        if ($resultado) {
-            $_SESSION['mensaje'] = 'El evento ha sido modificado exitosamente.';
+        $eventoId = filter_input(INPUT_POST, 'modificarEventoId', FILTER_VALIDATE_INT);
+        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+        $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
+        $fechainicio = filter_input(INPUT_POST, 'fechainicio', FILTER_SANITIZE_STRING);
+        $fechafin = filter_input(INPUT_POST, 'fechafin', FILTER_SANITIZE_STRING);
+        $idUsuario = $_SESSION['id'];
+
+        if ($eventoId && $titulo && $descripcion && $fechainicio && $fechafin) {
+            $resultado = $dao->actualizar($eventoId, $titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
+            if ($resultado) {
+                $_SESSION['mensaje'] = 'El evento ha sido modificado exitosamente.';
+            } else {
+                $_SESSION['mensaje'] = 'No se pudo modificar el evento.';
+            }
         } else {
-            $_SESSION['mensaje'] = 'No se pudo modificar el evento.';
+            $_SESSION['mensaje'] = 'Datos inválidos para modificar el evento.';
         }
         header('Location: Eventos.php');
         exit;
     } elseif (isset($_POST['agregarEvento'])) {
-        $titulo = $_POST['titulo'];
-        $descripcion = $_POST['descripcion'];
-        $fechainicio = $_POST['fechainicio'];
-        $fechafin = $_POST['fechafin'];
-        $resultado = $dao->agregar($titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
-        if ($resultado) {
-            $_SESSION['mensaje'] = 'El evento ha sido agregado exitosamente.';
+        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+        $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
+        $fechainicio = filter_input(INPUT_POST, 'fechainicio', FILTER_SANITIZE_STRING);
+        $fechafin = filter_input(INPUT_POST, 'fechafin', FILTER_SANITIZE_STRING);
+        $idUsuario = $_SESSION['id'];
+
+        if ($titulo && $descripcion && $fechainicio && $fechafin) {
+            $resultado = $dao->agregar($titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
+            if ($resultado) {
+                $_SESSION['mensaje'] = 'El evento ha sido agregado exitosamente.';
+            } else {
+                $_SESSION['mensaje'] = 'No se pudo agregar el evento.';
+            }
         } else {
-            $_SESSION['mensaje'] = 'No se pudo agregar el evento.';
+            $_SESSION['mensaje'] = 'Datos inválidos para agregar el evento.';
         }
         header('Location: Eventos.php');
         exit;
@@ -67,6 +82,16 @@ if (isset($_SESSION['mensaje'])) {
 ?>
 
 
+<!-- filter_input: Se utiliza para validar y sanitizar los datos de entrada.
+FILTER_VALIDATE_INT: Se usa para validar que un ID es un entero válido.
+FILTER_SANITIZE_STRING: Se usa para limpiar cadenas de texto y evitar inyecciones de código. -->
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,6 +101,7 @@ if (isset($_SESSION['mensaje'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/estilos.css">
+    <link  href="css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 </head>
 <body>
@@ -252,5 +278,7 @@ document.getElementById('formEliminarEvento').addEventListener('submit', functio
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/eventos.js>
 </body>
 </html>
