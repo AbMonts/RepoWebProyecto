@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const correo = document.getElementById('correo');
     const apellido1 = document.getElementById('apellido1');
     const apellido2 = document.getElementById('apellido2');
+    const usuario = document.getElementById('usuario');
     const rol = document.getElementById('rol');
     const contrasena = document.getElementById('contrasena');
 
@@ -10,82 +11,53 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorCorreo = document.getElementById('errorCorreo');
     const errorApellido1 = document.getElementById('errorApellido1');
     const errorApellido2 = document.getElementById('errorApellido2');
+    const errorUsuario = document.getElementById('errorUsuario');
     const errorRol = document.getElementById('errorRol');
     const errorContrasena = document.getElementById('errorContrasena');
 
-    nombre.addEventListener('input', function () {
-        if (nombre.value.trim() === '') {
-            nombre.classList.add('is-invalid');
-            nombre.classList.remove('is-valid');
-            errorNombre.textContent = 'El nombre es obligatorio.';
-        } else {
-            nombre.classList.remove('is-invalid');
-            nombre.classList.add('is-valid');
-            errorNombre.textContent = '';
-        }
+    nombre.addEventListener('keyup', function () {
+        validarCampoRequerido(nombre, errorNombre, 'El nombre es obligatorio.');
     });
 
-    apellido1.addEventListener('input', function () {
-        if (apellido1.value.trim() === '') {
-            apellido1.classList.add('is-invalid');
-            apellido1.classList.remove('is-valid');
-            errorApellido1.textContent = 'El primer apellido es obligatorio.';
-        } else {
-            apellido1.classList.remove('is-invalid');
-            apellido1.classList.add('is-valid');
-            errorApellido1.textContent = '';
-        }
+    apellido1.addEventListener('keyup', function () {
+        validarCampoRequerido(apellido1, errorApellido1, 'El primer apellido es obligatorio.');
     });
 
-    apellido2.addEventListener('input', function () {
-        if (apellido2.value.trim() === '') {
-            apellido2.classList.add('is-invalid');
-            apellido2.classList.remove('is-valid');
-            errorApellido2.textContent = 'El segundo apellido es obligatorio.';
-        } else {
-            apellido2.classList.remove('is-invalid');
-            apellido2.classList.add('is-valid');
-            errorApellido2.textContent = '';
-        }
+    apellido2.addEventListener('keyup', function () {
+        validarCampoRequerido(apellido2, errorApellido2, 'El segundo apellido es obligatorio.');
     });
 
-    correo.addEventListener('input', function () {
+    correo.addEventListener('keyup', function () {
         if (correo.value.trim() === '') {
-            correo.classList.add('is-invalid');
-            correo.classList.remove('is-valid');
-            errorCorreo.textContent = 'El correo es obligatorio.';
+            marcarInvalido(correo, errorCorreo, 'El correo es obligatorio.');
         } else if (!validarEmail(correo.value)) {
-            correo.classList.add('is-invalid');
-            correo.classList.remove('is-valid');
-            errorCorreo.textContent = 'El correo no es válido.';
+            marcarInvalido(correo, errorCorreo, 'El correo no es válido.');
         } else {
-            correo.classList.remove('is-invalid');
-            correo.classList.add('is-valid');
-            errorCorreo.textContent = '';
+            marcarValido(correo, errorCorreo);
         }
     });
 
-    rol.addEventListener('input', function () {
-        if (rol.value === '') {
-            rol.classList.add('is-invalid');
-            rol.classList.remove('is-valid');
-            errorRol.textContent = 'El rol es obligatorio.';
+    usuario.addEventListener('keyup', function () {
+        if (usuario.value.trim() === '') {
+            marcarInvalido(usuario, errorUsuario, 'El usuario es obligatorio.');
+        } else if (!/^[a-zA-Z0-9]{3,15}$/.test(usuario.value)) {
+            marcarInvalido(usuario, errorUsuario, 'El usuario debe tener entre 3 y 15 caracteres alfanuméricos.');
         } else {
-            rol.classList.remove('is-invalid');
-            rol.classList.add('is-valid');
-            errorRol.textContent = '';
+            marcarValido(usuario, errorUsuario);
         }
     });
 
-    contrasena.addEventListener('input', function () {
+    rol.addEventListener('keyup', function () {
+        validarCampoRequerido(rol, errorRol, 'El rol es obligatorio.');
+    });
+
+    contrasena.addEventListener('keyup', function () {
         if (contrasena.value.trim() === '') {
-            contrasena.classList.add('is-invalid');
-            contrasena.classList.remove('is-valid');
-            errorContrasena.textContent = 'La contraseña es obligatoria.';
+            marcarInvalido(contrasena, errorContrasena, 'La contraseña es obligatoria.');
+        } else if (contrasena.value.length < 6) {
+            marcarInvalido(contrasena, errorContrasena, 'La contraseña debe tener al menos 6 caracteres.');
         } else {
-            contrasena.classList.remove('is-invalid');
-            contrasena.classList.add('is-valid');
-            errorContrasena.textContent = '';
+            marcarValido(contrasena, errorContrasena);
         }
     });
 
@@ -98,72 +70,76 @@ document.addEventListener('DOMContentLoaded', function () {
     function validarFormulario() {
         let isValid = true;
 
-        if (nombre.value.trim() === '') {
-            nombre.classList.add('is-invalid');
-            nombre.classList.remove('is-valid');
-            errorNombre.textContent = 'El nombre es obligatorio.';
-            isValid = false;
-        } else {
-            nombre.classList.remove('is-invalid');
-            nombre.classList.add('is-valid');
-        }
-
-        if (correo.value.trim() === '') {
-            correo.classList.add('is-invalid');
-            correo.classList.remove('is-valid');
-            errorCorreo.textContent = 'El correo es obligatorio.';
-            isValid = false;
-        } else if (!validarEmail(correo.value)) {
-            correo.classList.add('is-invalid');
-            correo.classList.remove('is-valid');
-            errorCorreo.textContent = 'El correo no es válido.';
-            isValid = false;
-        } else {
-            correo.classList.remove('is-invalid');
-            correo.classList.add('is-valid');
-        }
-
-        if (apellido1.value.trim() === '') {
-            apellido1.classList.add('is-invalid');
-            apellido1.classList.remove('is-valid');
-            errorApellido1.textContent = 'El primer apellido es obligatorio.';
-            isValid = false;
-        } else {
-            apellido1.classList.remove('is-invalid');
-            apellido1.classList.add('is-valid');
-        }
-
-        if (apellido2.value.trim() === '') {
-            apellido2.classList.add('is-invalid');
-            apellido2.classList.remove('is-valid');
-            errorApellido2.textContent = 'El segundo apellido es obligatorio.';
-            isValid = false;
-        } else {
-            apellido2.classList.remove('is-invalid');
-            apellido2.classList.add('is-valid');
-        }
-
-        if (rol.value === '') {
-            rol.classList.add('is-invalid');
-            rol.classList.remove('is-valid');
-            errorRol.textContent = 'El rol es obligatorio.';
-            isValid = false;
-        } else {
-            rol.classList.remove('is-invalid');
-            rol.classList.add('is-valid');
-        }
-
-        if (contrasena.value.trim() === '') {
-            contrasena.classList.add('is-invalid');
-            contrasena.classList.remove('is-valid');
-            errorContrasena.textContent = 'La contraseña es obligatoria.';
-            isValid = false;
-        } else {
-            contrasena.classList.remove('is-invalid');
-            contrasena.classList.add('is-valid');
-        }
+        isValid &= validarCampoRequerido(nombre, errorNombre, 'El nombre es obligatorio.');
+        isValid &= validarCorreo(correo, errorCorreo);
+        isValid &= validarCampoRequerido(apellido1, errorApellido1, 'El primer apellido es obligatorio.');
+        isValid &= validarCampoRequerido(apellido2, errorApellido2, 'El segundo apellido es obligatorio.');
+        isValid &= validarUsuario(usuario, errorUsuario);
+        isValid &= validarCampoRequerido(rol, errorRol, 'El rol es obligatorio.');
+        isValid &= validarContrasena(contrasena, errorContrasena);
 
         return isValid;
+    }
+
+    function validarCampoRequerido(campo, errorElem, mensajeError) {
+        if (campo.value.trim() === '') {
+            marcarInvalido(campo, errorElem, mensajeError);
+            return false;
+        } else {
+            marcarValido(campo, errorElem);
+            return true;
+        }
+    }
+
+    function validarCorreo(campo, errorElem) {
+        if (campo.value.trim() === '') {
+            marcarInvalido(campo, errorElem, 'El correo es obligatorio.');
+            return false;
+        } else if (!validarEmail(campo.value)) {
+            marcarInvalido(campo, errorElem, 'El correo no es válido.');
+            return false;
+        } else {
+            marcarValido(campo, errorElem);
+            return true;
+        }
+    }
+
+    function validarUsuario(campo, errorElem) {
+        if (campo.value.trim() === '') {
+            marcarInvalido(campo, errorElem, 'El usuario es obligatorio.');
+            return false;
+        } else if (!/^[a-zA-Z0-9]{3,15}$/.test(campo.value)) {
+            marcarInvalido(campo, errorElem, 'El usuario debe tener entre 3 y 15 caracteres alfanuméricos.');
+            return false;
+        } else {
+            marcarValido(campo, errorElem);
+            return true;
+        }
+    }
+
+    function validarContrasena(campo, errorElem) {
+        if (campo.value.trim() === '') {
+            marcarInvalido(campo, errorElem, 'La contraseña es obligatoria.');
+            return false;
+        } else if (campo.value.length < 6) {
+            marcarInvalido(campo, errorElem, 'La contraseña debe tener al menos 6 caracteres.');
+            return false;
+        } else {
+            marcarValido(campo, errorElem);
+            return true;
+        }
+    }
+
+    function marcarInvalido(campo, errorElem, mensajeError) {
+        campo.classList.add('is-invalid');
+        campo.classList.remove('is-valid');
+        errorElem.textContent = mensajeError;
+    }
+
+    function marcarValido(campo, errorElem) {
+        campo.classList.remove('is-invalid');
+        campo.classList.add('is-valid');
+        errorElem.textContent = '';
     }
 
     function validarEmail(email) {

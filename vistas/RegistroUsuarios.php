@@ -23,76 +23,89 @@
         require_once("../datos/DAOUsuario.php");
 
         // Inicializar variables
-        $usuario = null;
+        $usuarioObj = null;
         $id = null;
         $errores = [];
 
-        // Si se recibe el ID del usuario, buscar los datos en la base de datos
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $id = $_GET['id'];
             $dao = new DAOUsuario();
-            $usuario = $dao->obtenerPorId($id);
+            $usuarioObj = $dao->obtenerPorId($id);
         }
 
+
+        
         if (isset($_SESSION['errores'])) {
             $errores = $_SESSION['errores'];
             unset($_SESSION['errores']);
         }
-    ?>
-    <main>
-        <div class="container pt-4">
-            <?php
-                if (isset($_SESSION["msg"])) {
-                    $msgInfo = explode("--", $_SESSION["msg"]);
-                    echo "<div class='alert $msgInfo[0]'>$msgInfo[1]</div>";
-                    unset($_SESSION["msg"]);
-                }
-            ?>
+        // Si se recibe el ID del usuario, buscar los datos en la base de datos
+     
+?>
+<main>
+    <div class="container pt-4">
+    <?php
+
+    if (isset($_POST["id"]) && is_numeric($_POST["id"])) {
+                //Se ha indicado que se debe eliminar un usuario
+        $dao = new DAOUsuario();
+        if ($dao->eliminar($_POST["id"])) {
+        $_SESSION["msg"] = "alert-success--Usuario eliminado exitosamente";
+        } else {
+        $_SESSION["msg"] = "alert-danger--No se ha podido eliminar al usuario seleccionado debido a que tiene procesos relacionados";
+        }
+    }
+    if (isset($_SESSION["msg"])) {
+        $msgInfo = explode("--", $_SESSION["msg"]);
+        echo "<div class='alert $msgInfo[0]'>$msgInfo[1]</div>";
+        unset($_SESSION["msg"]);
+    }
+?>
             <form action="guardar_usuario.php" method="post" id="usuarioForm">
-                <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario->id ?? ''); ?>">
+                <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuarioObj->id ?? ''); ?>">
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario->nombre ?? ''); ?>">
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuarioObj->nombre ?? ''); ?>">
                     <span id="errorNombre" class="text-danger"></span>
                     <span class="text-danger"><?php echo htmlspecialchars($errores['nombre'] ?? ''); ?></span>
                 </div>
                 <div class="mb-3">
                     <label for="apellido1" class="form-label">Primer Apellido</label>
-                    <input type="text" class="form-control" id="apellido1" name="apellido1" value="<?php echo htmlspecialchars($usuario->apellido1 ?? ''); ?>">
+                    <input type="text" class="form-control" id="apellido1" name="apellido1" value="<?php echo htmlspecialchars($usuarioObj->apellido1 ?? ''); ?>">
                     <span id="errorApellido1" class="text-danger"></span>
                     <span class="text-danger"><?php echo htmlspecialchars($errores['apellido1'] ?? ''); ?></span>
                 </div>
                 <div class="mb-3">
                     <label for="apellido2" class="form-label">Segundo Apellido</label>
-                    <input type="text" class="form-control" id="apellido2" name="apellido2" value="<?php echo htmlspecialchars($usuario->apellido2 ?? ''); ?>">
+                    <input type="text" class="form-control" id="apellido2" name="apellido2" value="<?php echo htmlspecialchars($usuarioObj->apellido2 ?? ''); ?>">
                     <span id="errorApellido2" class="text-danger"></span>
                     <span class="text-danger"><?php echo htmlspecialchars($errores['apellido2'] ?? ''); ?></span>
                 </div>
                 <div class="mb-3">
                     <label for="correo" class="form-label">Correo</label>
-                    <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuario->correo ?? ''); ?>">
+                    <input type="email" class="form-control" id="correo" name="correo" value="<?php echo htmlspecialchars($usuarioObj->correo ?? ''); ?>">
                     <span id="errorCorreo" class="text-danger"></span>
                     <span class="text-danger"><?php echo htmlspecialchars($errores['correo'] ?? ''); ?></span>
                 </div>
                 <div class="mb-3">
-                    <label for="usuario" class="form-label">Usuario</label>
-                    <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars($usuario->usuario ?? ''); ?>">
-                    <span id="errorUsuario" class="text-danger"></span>
-                    <span class="text-danger"><?php echo htmlspecialchars($errores['usuario'] ?? ''); ?></span>
+                <label for="usuario" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars($usuarioObj->usuario ?? ''); ?>">
+                <span id="errorUsuario" class="text-danger"></span>
+                <span class="text-danger"><?php echo htmlspecialchars($errores['usuario'] ?? ''); ?></span>
                 </div>
                 <div class="mb-3">
                     <label for="rol" class="form-label">Rol</label>
                     <select class="form-control" id="rol" name="rol">
-                        <option value="Default">Selecciona un rol</option>
-                        <option value="usuario" <?php echo (isset($usuario->rol) && $usuario->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
-                        <option value="admin" <?php echo (isset($usuario->rol) && $usuario->rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
+                        <option value="" disabled>Selecciona un rol</option>
+                        <option value="usuario" <?php echo (isset($usuarioObj->rol) && $usuarioObj->rol == 'usuario') ? 'selected' : ''; ?>>Usuario</option>
+                        <option value="admin" <?php echo (isset($usuarioObj->rol) && $usuarioObj->rol == 'admin') ? 'selected' : ''; ?>>Administrador</option>
                     </select>
                     <span id="errorRol" class="text-danger"></span>
                     <span class="text-danger"><?php echo htmlspecialchars($errores['rol'] ?? ''); ?></span>
                 </div>
                 <div class="mb-3">
                     <label for="contrasena" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($usuario->contrasena ?? ''); ?>">
+                    <input type="password" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($usuarioObj->contrasena ?? ''); ?>">
                     <span id="errorContrasena" class="text-danger"></span>
                     <span class="text-danger"><?php echo htmlspecialchars($errores['contrasena'] ?? ''); ?></span>
                 </div>

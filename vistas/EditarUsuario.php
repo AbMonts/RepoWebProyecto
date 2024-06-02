@@ -4,42 +4,40 @@ require_once '../datos/Conexion.php';
 require_once '../modelos/Usuario.php';
 require_once '../datos/DAOUsuario.php';
 
-
+$id = null;
+$nombre = "";
+$correo = "";
+$apellido1 = "";
+$apellido2 = "";
+$rol = "";
+$contrasena = "";
 
 $errores = $_SESSION['errores'] ?? [];
 $data = $_SESSION['data'] ?? [];
 $id = 0;
 
-$id = $data['id'] ?? null;
-$nombre = $data['nombre'] ?? "";
-$correo = $data['correo'] ?? "";
-$usuario = $data['usuario'] ?? "";
-$apellido1 = $data['apellido1'] ?? "";
-$apellido2 = $data['apellido2'] ?? "";
-$rol = $data['rol'] ?? "";
-$contrasena = $data['contrasena'] ?? "";
 
 //var_dump('usuario con id: ' .$_GET['id']);
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-  //var_dump('se entro al if con : ' .$_GET['id']);
-    $id = $_GET['id'];
-    //var_dump('el id declarado es : '.$id );
-        $dao = new DAOUsuario();
-        $usuarioObj = $dao->obtenerPorId($id);
-
-            $nombre = $usuarioObj->nombre;
-            $correo = $usuarioObj->correo;
-            $usuario = $usuarioObj->usuario;
-            $apellido1 = $usuarioObj->apellido1;
-            $apellido2 = $usuarioObj->apellido2;
-            $rol = $usuarioObj->rol;
-            $contrasena = $usuarioObj->contrasena;
-            
-       // var_dump('/nAfuera del if'.$nombre, $correo, $usuario, $apellido1, $apellido2, $rol, $contrasena);
+  $id = $_GET['id'];
+  $dao = new DAOUsuario();
+  $usuarioObj = $dao->obtenerPorId($id);
+  if ($usuarioObj) {
+      $nombre = $usuarioObj->nombre;
+      $correo = $usuarioObj->correo;
+      $apellido1 = $usuarioObj->apellido1;
+      $apellido2 = $usuarioObj->apellido2;
+      $rol = $usuarioObj->rol;
+      $contrasena = $usuarioObj->contrasena;
+  } else {
+      echo "No se encontró el usuario con ID: " . htmlspecialchars($id);
+      exit;
+  }
 } else {
-    echo "ID de usuario no válido";
-    exit;
+  echo "ID de usuario no válido";
+  exit;
 }
+
 ?>
 <!doctype html>
 <html lang="en">

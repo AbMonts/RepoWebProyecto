@@ -174,14 +174,13 @@ class DAOUsuario
 	}
 
 
-    public function actualizar(Usuario $obj)
+    public function actualizar(Usuario $obj) //no necesita usario
     {
         try {
             $sql = "UPDATE usuarios
                     SET
                     nombre = ?,
                     correo = ?,
-                    usuario = ?,
                     apellido1 = ?,
                     apellido2 = ?,
                     rol = ?,
@@ -195,7 +194,6 @@ class DAOUsuario
                 array(
                     $obj->nombre,
                     $obj->correo,
-                    $obj->usuario,
                     $obj->apellido1,
                     $obj->apellido2,
                     $obj->rol,
