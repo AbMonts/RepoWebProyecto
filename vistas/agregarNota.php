@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../datos/DAONotas.php';
 require_once '../modelos/Notas.php';
 

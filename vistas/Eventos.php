@@ -27,8 +27,6 @@ FILTER_SANITIZE_STRING: Se usa para limpiar cadenas de texto y evitar inyeccione
    
     
 <?php 
-
-
 if (!isset($_SESSION['id'])) {
     die("Acceso denegado.");
 }

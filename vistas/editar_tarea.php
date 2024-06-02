@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $isdone = isset($_POST['isdone']) ? 1 : 0;
 
     if (strlen($titulo) < 5) {
-        $errores['titulo'] = "El título debe tener al menos 5 caracteres.";
+        $errores['titulo'] = "El titulo debe tener al menos 5 caracteres.";
     }
 
     if (empty($contenido)) {

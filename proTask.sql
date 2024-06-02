@@ -120,6 +120,9 @@ UPDATE usuarios
                     WHERE id = 1;
 
 
+UPDATE usuarios
+  SET rol = 'usuario' WHERE id = 1;
+
 INSERT INTO usuarios (nombre, apellido1, apellido2, correo, usuario, rol, contrasena, isEnabled) 
                 VALUES ('Abril', 'Penaloza', 'Tenorio', 'abrilmontse15@gmail.com', 'AbMonts', 'usuario', 1234, true);
 

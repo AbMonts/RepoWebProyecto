@@ -1,3 +1,9 @@
+<?php
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+    }
+    require_once "../datos/DAOTareas.php";
+    ?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -22,17 +28,38 @@
 
   <div class="container pt-4">
     <?php
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-    }
+    $userId = $_SESSION['id'];
 
     if (!isset($_SESSION['id'])) {
+      die("Acceso denegado.");
+  }
+  if (!isset($_SESSION['id'])) {
       echo "<div class='alert alert-danger'>Usuario no autenticado</div>";
+      header('Location: index.php');
       exit;
-    }
+  }
+  
+     
+      $dao = new DAOTareas();
+      $lista = $dao->obtenerTareas($userId);
+
+      $porHacer = [];
+      $hechas = [];
+
+      if ($lista) {
+        foreach ($lista as $tarea) {
+          if ($tarea->isdone) {
+            $hechas[] = $tarea;
+          } else {
+            $porHacer[] = $tarea;
+          }
+        }
+      }
+
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["id"]) && is_numeric($_POST["id"])) {
-      require_once "../datos/DAOTareas.php";
+     
+
       $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
       if ($id === false) {
         echo "<div class='alert alert-danger'>ID de tarea inválido</div>";
@@ -52,11 +79,11 @@
       unset($_SESSION["msg"]);
     }
 
-    $userId = $_SESSION['id'];
+    
     ?>
 
-    <div>
-      <h2>Tareas</h2>
+    <div class= "my-5">
+     <h2>Tareas</h2> <!--   ...........................     ................................................ -->
  
    
     <div class="button-group my-3">
@@ -66,22 +93,7 @@
 
     <div class="accordion" id="accordionExample">
       <?php 
-        require_once("../datos/DAOTareas.php");
-        $dao = new DAOTareas();
-        $lista = $dao->obtenerTareas($userId);
-
-        $porHacer = [];
-        $hechas = [];
-
-        if ($lista) {
-          foreach ($lista as $tarea) {
-            if ($tarea->isdone) {
-              $hechas[] = $tarea;
-            } else {
-              $porHacer[] = $tarea;
-            }
-          }
-        }
+    
       ?>
 
       <div class="accordion-item">
