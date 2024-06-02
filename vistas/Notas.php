@@ -10,7 +10,6 @@
     integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="css/estilos.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js" integrity="sha512-Rfdu1c2/8/1hrbiSFT8+P+57odUXcFGmTfJmvjVOhdQgi1+xW6BfW8I/TPZMb/gAjTxXZ8ykA69hYbfPoc3PA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -22,44 +21,88 @@
   <?php
     require_once '../datos/DAONotas.php';
 
+    if (!isset($_SESSION['id'])) {
+        die("Acceso denegado.");
+    }
+
     $daoNotas = new DAONotas();
     $idUsuario = $_SESSION['id']; 
     $notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
 
+    function validarLongitud($campo, $longitudMaxima) {
+        return strlen($campo) <= $longitudMaxima;
+    }
+
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if (isset($_POST['eliminarNotaId'])) {
-            $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
-            if ($notaId) {
-                $resultado = $daoNotas->eliminarNota($notaId);
-                if ($resultado) {
-                    echo "<div class='alert alert-success'>La nota ha sido eliminada exitosamente.</div>";
-                } else {
-                    echo "<div class='alert alert-danger'>No se pudo eliminar la nota.</div>";
-                }
-            } else {
-                echo "<div class='alert alert-danger'>ID de nota inválido.</div>";
-            }
-        }
+        $mensaje = '';
+        $tipo = '';
 
-        if (isset($_POST['modificarNotaId'])) {
-            $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
-            $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
-            $contenido = filter_input(INPUT_POST, 'contenido', FILTER_SANITIZE_STRING);
-
-            if ($notaId && $titulo && $contenido) {
-                $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
-                if ($resultado) {
-                    echo "<div class='alert alert-success'>La nota ha sido modificada exitosamente.</div>";
-                } else {
-                    echo "<div class='alert alert-danger'>No se pudo modificar la nota.</div>";
-                }
+    if (isset($_POST['eliminarNotaId'])) {
+        $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
+        if ($notaId) {
+            $resultado = $daoNotas->eliminarNota($notaId);
+            if ($resultado) {
+                $mensaje = 'Nota eliminada con éxito.';
+                $tipo = 'success';
             } else {
-                echo "<div class='alert alert-danger'>Datos inválidos para modificar la nota.</div>";
+                $mensaje = 'Error al eliminar la nota.';
+                $tipo = 'error';
             }
         }
     }
+  
+    if (isset($_POST['modificarNotaId'], $_POST['titulo'], $_POST['contenido'])) {
+      $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
+      $titulo = $_POST['titulo'];
+      $contenido = $_POST['contenido'];
+
+      if ($notaId && $titulo && $contenido && validarLongitud($titulo, 255) && validarLongitud($contenido, 1000)) {
+          // Prevención de inyección SQL
+          $titulo = htmlspecialchars($titulo);
+          $contenido = htmlspecialchars($contenido);
+          
+          $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
+          if ($resultado) {
+              $mensaje = 'Nota modificada con éxito.';
+              $tipo = 'success';
+          } else {
+              $mensaje = 'Error al modificar la nota.';
+              $tipo = 'error';
+          }
+      }
+  }
+
+  //el de agregar nota el proceso se encuentra en ---> agregarNota.php
+  
+   
+
+    $_SESSION['mensaje'] = $mensaje;
+    $_SESSION['tipo'] = $tipo;
+    
+    header("Location: {$_SERVER['PHP_SELF']}");
+    exit();
+}
+
+if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
+  $mensaje = htmlspecialchars($_SESSION['mensaje']);
+  $tipo = htmlspecialchars($_SESSION['tipo']);
+  unset($_SESSION['mensaje']);
+  unset($_SESSION['tipo']);
+  echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
+}
   ?>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var alert = document.getElementById('alert');
+        if (alert) {
+            setTimeout(function() {
+                alert.style.display = 'none';
+            }, 5000); // Ocultar el mensaje después de 5 segundos
+        }
+    });
+</script>
   <!-- Botón para abrir el modal -->
   <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#agregarNotaModal">
     Agregar Nota
@@ -87,252 +130,110 @@
                       <button class='accordion-button' type='button' data-bs-toggle='collapse' data-bs-target='#collapseNota{$nota->id}' aria-expanded='false' aria-controls='collapseNota{$nota->id}'>
                         Ver contenido
                       </button>
-                    </h2>
-                    <div id='collapseNota{$nota->id}' class='accordion-collapse collapse' aria-labelledby='headingNota{$nota->id}' data-bs-parent='#accordionNota{$nota->id}'>
-                      <div class='accordion-body'>
-                        <p>" . htmlspecialchars($nota->contenido) . "</p>
-                        <a href='descargarNota.php?id=" . $nota->id . "' class='btn btn-primary' download><i class='fas fa-download'></i> Descargar</a>
-                        <button class='btn btn-danger ms-2' onclick='confirmarEliminarNota(" . $nota->id . ")'><i class='fas fa-trash'></i> Eliminar</button>
-                        <button class='btn btn-warning ms-2' onclick='modificarNota(" . $nota->id . ", \"" . htmlspecialchars($nota->titulo) . "\", \"" . htmlspecialchars($nota->contenido) . "\")'><i class='fas fa-edit'></i> Modificar</button>
+                   
+                      </h2>
+                      <div id='collapseNota{$nota->id}' class='accordion-collapse collapse' aria-labelledby='headingNota{$nota->id}' data-bs-parent='#accordionNota{$nota->id}'>
+                        <div class='accordion-body'>
+                          <p>" . htmlspecialchars($nota->contenido) . "</p>
+                          <a href='descargarNota.php?id=" . $nota->id . "' class='btn btn-primary' download><i class='fas fa-download'></i> Descargar</a>
+                          <button class='btn btn-danger ms-2' onclick='confirmarEliminarNota(" . $nota->id . ")'><i class='fas fa-trash'></i> Eliminar</button>
+                          <button class='btn btn-warning ms-2' onclick='modificarNota(" . $nota->id . ", \"" . htmlspecialchars($nota->titulo) . "\", \"" . htmlspecialchars($nota->contenido) . "\")'><i class='fas fa-edit'></i> Modificar</button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>";
+            </div>";
+          }
+        } else {
+          echo "<div class='alert alert-warning'>No hay notas disponibles</div>";
         }
-      } else {
-        echo "<div class='alert alert-warning'>No hay notas disponibles</div>";
-      }
-    ?>
+      ?>
+    </div>
   </div>
-</div>
-
-<!-- Modal para agregar nota -->
-<div class="modal fade" id="agregarNotaModal" tabindex="-1" aria-labelledby="agregarNotaModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="agregarNotaModalLabel">Agregar Nota</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data" onsubmit="return validarFormularioAgregar();">
-          <div class="mb-3">
-            <label for="titulo" class="form-label">Título</label>
-            <input type="text" class="form-control" id="titulo" name="titulo" required>
-            <span class="text-danger" id="errorTitulo"></span>
-          </div>
-          <div class="mb-3">
-            <label for="contenido" class="form-label">Contenido</label>
-            <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
-            <span class="text-danger" id="errorContenido"></span>
-          </div>
-          <div class="mb-3">
-            <label for="archivoNota" class="form-label">O cargar desde archivo</label>
-            <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
-            <span class="text-danger" id="errorArchivo"></span>
-          </div>
-          <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($idUsuario); ?>">
-          <button type="submit" class="btn btn-primary">Guardar Nota</button>
-        </form>
+  
+  <!-- Modal para agregar nota -->
+  <div class="modal fade" id="agregarNotaModal" tabindex="-1" aria-labelledby="agregarNotaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="agregarNotaModalLabel">Agregar Nota</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="titulo" class="form-label">Título</label>
+              <input type="text" class="form-control" id="titulo" name="titulo" required>
+            </div>
+            <div class="mb-3">
+              <label for="contenido" class="form-label">Contenido</label>
+              <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="archivoNota" class="form-label">O cargar desde archivo</label>
+              <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
+            </div>
+            <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($idUsuario); ?>">
+            <button type="submit" class="btn btn-primary">Guardar Nota</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Modal de confirmación de eliminación -->
-<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ¿Está seguro de que desea eliminar esta nota?
-      </div>
-      <div class="modal-footer">
-        <form id="formEliminarNota" method="post" action="">
-          <input type="hidden" name="eliminarNotaId" id="eliminarNotaId">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-danger">Eliminar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal para modificar nota -->
-<div class="modal fade" id="modificarNotaModal" tabindex="-1" aria-labelledby="modificarNotaModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modificarNotaModalLabel">Modificar Nota</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="formModificarNota" method="post" action="" onsubmit="return validarFormularioModificar();">
-          <input type="hidden" name="modificarNotaId" id="modificarNotaId">
-          <div class="mb-3">
-            <label for="modificarTitulo" class="form-label">Título</label>
-            <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
-            <span class="text-danger" id="errorModificarTitulo"></span>
-          </div>
-          <div class="mb-3">
-            <label for="modificarContenido" class="form-label">Contenido</label>
-            <textarea class="form-control" id="modificarContenido" name="contenido" rows="3"></textarea>
-            <span class="text-danger" id="errorModificarContenido"></span>
-          </div>
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        </form>
+  
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ¿Está seguro de que desea eliminar esta nota?
+        </div>
+        <div class="modal-footer">
+          <form id="formEliminarNota" method="post" action="">
+            <input type="hidden" name="eliminarNotaId" id="eliminarNotaId">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/bootstrap.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Elementos del formulario de agregar nota
-  const titulo = document.getElementById('titulo');
-  const contenido = document.getElementById('contenido');
-  const errorTitulo = document.getElementById('errorTitulo');
-  const errorContenido = document.getElementById('errorContenido');
-
-  titulo.addEventListener('input', function () {
-    if (titulo.value.length < 5) {
-      titulo.classList.add('is-invalid');
-      titulo.classList.remove('is-valid');
-      errorTitulo.textContent = 'El título debe tener al menos 5 caracteres.';
-    } else {
-      titulo.classList.remove('is-invalid');
-      titulo.classList.add('is-valid');
-      errorTitulo.textContent = '';
-    }
-  });
-
-  contenido.addEventListener('input', function () {
-    if (contenido.value.trim() === '') {
-      contenido.classList.add('is-invalid');
-      contenido.classList.remove('is-valid');
-      errorContenido.textContent = 'El contenido es obligatorio.';
-    } else {
-      contenido.classList.remove('is-invalid');
-      contenido.classList.add('is-valid');
-      errorContenido.textContent = '';
-    }
-  });
-
-  // Elementos del formulario de modificar nota
-  const modificarTitulo = document.getElementById('modificarTitulo');
-  const modificarContenido = document.getElementById('modificarContenido');
-  const errorModificarTitulo = document.getElementById('errorModificarTitulo');
-  const errorModificarContenido = document.getElementById('errorModificarContenido');
-
-  modificarTitulo.addEventListener('input', function () {
-    if (modificarTitulo.value.length < 5) {
-      modificarTitulo.classList.add('is-invalid');
-      modificarTitulo.classList.remove('is-valid');
-      errorModificarTitulo.textContent = 'El título debe tener al menos 5 caracteres.';
-    } else {
-      modificarTitulo.classList.remove('is-invalid');
-      modificarTitulo.classList.add('is-valid');
-      errorModificarTitulo.textContent = '';
-    }
-  });
-
-  modificarContenido.addEventListener('input', function () {
-    if (modificarContenido.value.trim() === '') {
-      modificarContenido.classList.add('is-invalid');
-      modificarContenido.classList.remove('is-valid');
-      errorModificarContenido.textContent = 'El contenido es obligatorio.';
-    } else {
-      modificarContenido.classList.remove('is-invalid');
-      modificarContenido.classList.add('is-valid');
-      errorModificarContenido.textContent = '';
-    }
-  });
-});
-
-function confirmarEliminarNota(notaId) {
-  const eliminarNotaIdInput = document.getElementById('eliminarNotaId');
-  eliminarNotaIdInput.value = notaId;
-  const eliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
-  eliminarModal.show();
-}
-
-function modificarNota(notaId, titulo, contenido) {
-  const modificarNotaIdInput = document.getElementById('modificarNotaId');
-  const modificarTituloInput = document.getElementById('modificarTitulo');
-  const modificarContenidoInput = document.getElementById('modificarContenido');
-
-  modificarNotaIdInput.value = notaId;
-  modificarTituloInput.value = titulo;
-  modificarContenidoInput.value = contenido;
-
-  const modificarModal = new bootstrap.Modal(document.getElementById('modificarNotaModal'));
-  modificarModal.show();
-}
-
-function validarFormularioAgregar() {
-  const titulo = document.getElementById('titulo');
-  const contenido = document.getElementById('contenido');
-  let isValid = true;
-
-  if (titulo.value.length < 5) {
-    titulo.classList.add('is-invalid');
-    titulo.classList.remove('is-valid');
-    document.getElementById('errorTitulo').textContent = 'El título debe tener al menos 5 caracteres.';
-    isValid = false;
-  } else {
-    titulo.classList.remove('is-invalid');
-    titulo.classList.add('is-valid');
-  }
-
-  if (contenido.value.trim() === '') {
-    contenido.classList.add('is-invalid');
-    contenido.classList.remove('is-valid');
-    document.getElementById('errorContenido').textContent = 'El contenido es obligatorio.';
-    isValid = false;
-  } else {
-    contenido.classList.remove('is-invalid');
-    contenido.classList.add('is-valid');
-  }
-
-  return isValid;
-}
-
-function validarFormularioModificar() {
-  const modificarTitulo = document.getElementById('modificarTitulo');
-  const modificarContenido = document.getElementById('modificarContenido');
-  let isValid = true;
-
-  if (modificarTitulo.value.length < 5) {
-    modificarTitulo.classList.add('is-invalid');
-    modificarTitulo.classList.remove('is-valid');
-    document.getElementById('errorModificarTitulo').textContent = 'El título debe tener al menos 5 caracteres.';
-    isValid = false;
-  } else {
-    modificarTitulo.classList.remove('is-invalid');
-    modificarTitulo.classList.add('is-valid');
-  }
-
-  if (modificarContenido.value.trim() === '') {
-    modificarContenido.classList.add('is-invalid');
-    modificarContenido.classList.remove('is-valid');
-    document.getElementById('errorModificarContenido').textContent = 'El contenido es obligatorio.';
-    isValid = false;
-  } else {
-    modificarContenido.classList.remove('is-invalid');
-    modificarContenido.classList.add('is-valid');
-  }
-
-  return isValid;
-}
-</script>
-
-</body>
-</html>
+  
+  <!-- Modal para modificar nota -->
+  <div class="modal fade" id="modificarNotaModal" tabindex="-1" aria-labelledby="modificarNotaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modificarNotaModalLabel">Modificar Nota</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formModificarNota" method="post" action="">
+            <input type="hidden" name="modificarNotaId" id="modificarNotaId">
+            <div class="mb-3">
+              <label for="modificarTitulo" class="form-label">Título</label>
+              <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
+            </div>
+            <div class="mb-3">
+              <label for="modificarContenido" class="form-label">Contenido</label>
+              <textarea class="form-control" id="modificarContenido" name="contenido" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/notas.js"></script>
+  
+  </body>
+  </html>

@@ -2,13 +2,19 @@
 require_once '../datos/DAOEventos.php';
 session_start();
 
-if (!isset($_SESSION['id'])) {
-    echo "Usuario no autenticado";
-    exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validación de existencia de parámetros
+    if (!isset($_POST['id'])) {
+        echo "Falta el parámetro 'id'";
+        exit;
+    }
+
+    // Validación de tipo de dato
     $id = $_POST['id'];
+    if (!is_numeric($id)) {
+        echo "El parámetro 'id' debe ser un número";
+        exit;
+    }
 
     $dao = new DAOEvento();
     $result = $dao->eliminar($id);

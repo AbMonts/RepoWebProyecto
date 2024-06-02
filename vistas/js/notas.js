@@ -6,12 +6,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function showMessage(message) {
-  var messageElement = document.createElement('div');
+  var messageContainer = document.createElement('span');
+  messageContainer.classList.add('position-absolute', 'top-0', 'start-50', 'translate-middle-x');
+  
+  var messageElement = document.createElement('span');
   messageElement.textContent = message;
   messageElement.classList.add('alert', 'alert-info');
-  document.body.appendChild(messageElement);
+  
+  var closeButton = document.createElement('button');
+  closeButton.innerHTML = '&times;';
+  closeButton.classList.add('btn-close');
+  closeButton.addEventListener('click', function() {
+    messageContainer.remove();
+  });
+  
+  messageContainer.appendChild(messageElement);
+  messageContainer.appendChild(closeButton);
+  
+  document.body.appendChild(messageContainer);
+  
   setTimeout(function() {
-      messageElement.remove();
+      messageContainer.remove();
   }, 3000); // Remover el mensaje después de 3 segundos
 }
 
@@ -43,17 +58,22 @@ function modificarNota(id, titulo, contenido) {
   });
 }
 
-
 // Validación del formulario de agregar nota
 document.getElementById('formAgregarNota').addEventListener('submit', function(event) {
   const titulo = document.getElementById('titulo').value;
   const contenido = document.getElementById('contenido').value;
 
-  if (!titulo) {
+  if (!titulo.trim()) {
       showMessage('El título es requerido.');
       event.preventDefault();
-  } else if (contenido.length < 1) {
-      showMessage('El contenido debe tener al menos 1 caracter.');
+  } else if (!contenido.trim()) {
+      showMessage('El contenido es requerido.');
+      event.preventDefault();
+  } else if (titulo.length > 255) {
+      showMessage('El título no puede exceder los 255 caracteres.');
+      event.preventDefault();
+  } else if (contenido.length > 1000) {
+      showMessage('El contenido no puede exceder los 1000 caracteres.');
       event.preventDefault();
   }
 });
@@ -63,11 +83,17 @@ document.getElementById('formModificarNota').addEventListener('submit', function
   const titulo = document.getElementById('modificarTitulo').value;
   const contenido = document.getElementById('modificarContenido').value;
 
-  if (!titulo) {
+  if (!titulo.trim()) {
       showMessage('El título es requerido.');
       event.preventDefault();
-  } else if (contenido.length < 1) {
-      showMessage('El contenido debe tener al menos 1 caracter.');
+  } else if (!contenido.trim()) {
+      showMessage('El contenido es requerido.');
+      event.preventDefault();
+  } else if (titulo.length > 255) {
+      showMessage('El título no puede exceder los 255 caracteres.');
+      event.preventDefault();
+  } else if (contenido.length > 1000) {
+      showMessage('El contenido no puede exceder los 1000 caracteres.');
       event.preventDefault();
   }
 });

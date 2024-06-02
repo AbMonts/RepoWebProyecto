@@ -45,7 +45,7 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                     <?php } ?>
 
 
-                    <?php if ($usuarioRol == 'usuario' && $currentFile != 'home.php' or $currentFile != 'Eventos.php') { ?>
+                    <?php if ($usuarioRol == 'usuario' && $currentFile != 'home.php') { ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
