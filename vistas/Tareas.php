@@ -28,7 +28,7 @@
 
   <div class="container pt-4">
     <?php
-    $userId = $_SESSION['id'];
+   
 
     if (!isset($_SESSION['id'])) {
       die("Acceso denegado.");
@@ -38,7 +38,7 @@
       header('Location: index.php');
       exit;
   }
-  
+      $userId = $_SESSION['id'];
      
       $dao = new DAOTareas();
       $lista = $dao->obtenerTareas($userId);
@@ -59,29 +59,49 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["id"]) && is_numeric($_POST["id"])) {
      
+      $mensaje = '';
+      $tipo = '';
 
       $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
       if ($id === false) {
         echo "<div class='alert alert-danger'>ID de tarea inválido</div>";
-      } else {
+      } else { //si recibe el server el id correcto en su totalidad,
         $dao = new DAOTareas();
         if ($dao->eliminarTarea($id)) {
-          $_SESSION["msg"] = "alert-success--Tarea eliminada exitosamente";
+          $mensaje  = "Tarea eliminada exitosamente :D";
+          $tipo = 'success';
         } else {
-          $_SESSION["msg"] = "alert-danger--No se ha podido eliminar la tarea seleccionada";
+          $mensaje = "No se ha podido eliminar la tarea deseada :C";
+          $tipo = 'error';
         }
       }
-    }
 
-    if (isset($_SESSION["msg"])) {
-      $msgInfo = explode("--", $_SESSION["msg"]);
-      echo "<div class='alert {$msgInfo[0]}'>{$msgInfo[1]}</div>";
-      unset($_SESSION["msg"]);
-    }
-
+      $_SESSION['mensaje'] = $mensaje;
+      $_SESSION['tipo'] = $tipo;
     
-    ?>
+      header("Location: {$_SERVER['PHP_SELF']}");
+      exit();
+    }
 
+    if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
+      $mensaje = htmlspecialchars($_SESSION['mensaje']);
+      $tipo = htmlspecialchars($_SESSION['tipo']);
+      unset($_SESSION['mensaje']);
+      unset($_SESSION['tipo']);
+      echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
+    }
+  
+    ?>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var alert = document.getElementById('alert');
+        if (alert) {
+            setTimeout(function() {
+                alert.style.display = 'none';
+            }, 5000); // Ocultar el mensaje después de 5 segundos
+        }
+    });
+</script>
     <div class= "my-5">
      <h2>Tareas</h2> <!--   ...........................     ................................................ -->
  

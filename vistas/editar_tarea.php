@@ -6,6 +6,10 @@ $errores = [];
 $titulo = $contenido = $fechainicio = $fechafin = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $mensaje = '';
+    $tipo = '';
+
+
     $idTarea = $_POST['idTarea'];
     $titulo = trim($_POST['titulo']);
     $contenido = trim($_POST['contenido']);
@@ -36,21 +40,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $actualizada = $dao->actualizarTarea($idTarea, $titulo, $contenido, $fechainicio, $fechafin, $isdone);
 
         if ($actualizada) {
-            header('Location: Tareas.php');
-            exit;
+            $mensaje = 'Tarea actualizada con exito :D';
+            $tipo = 'success';
         } else {
-            $errores['general'] = "Hubo un problema al actualizar la tarea.";
+            $mensaje = 'No se pudo modificar la tarea :(';
+            $tipo = 'error';
         }
     }
+
+    $_SESSION['mensaje'] = $mensaje;
+    $_SESSION['tipo'] = $tipo;
+    
+    header("Location: Tareas.php");
+    exit();
+
+
 } else {
-    if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    if (isset($_GET['id']) && is_numeric($_GET['id'])) { //aqui cuando solicita ver la tarea para pode modificar
         $idTarea = $_GET['id'];
         $dao = new DAOTareas();
         $tarea = $dao->obtenerTareaPorId($idTarea);
 
         if (!$tarea) {
-            echo "Tarea no encontrada";
-            exit;
+            $mensaje = 'No se encontro la tarea :C';
+            $tipo = 'error';
+            $_SESSION['mensaje'] = $mensaje;
+            $_SESSION['tipo'] = $tipo;
+    
+            header("Location: Tareas.php");
+            exit();
         }
 
         $titulo = $tarea->titulo;
@@ -59,10 +77,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fechafin = $tarea->fechafin;
         $isdone = $tarea->isdone;
     } else {
-        echo "ID de tarea no válido";
-        exit;
+        $mensaje = 'tarea no identificada :O';
+        $tipo = 'error';
+        $_SESSION['mensaje'] = $mensaje;
+            $_SESSION['tipo'] = $tipo;
+    
+            header("Location: Tareas.php");
+            exit();
     }
+
+    // $_SESSION['mensaje'] = $mensaje;
+    // $_SESSION['tipo'] = $tipo;
+    
+    // header("Location: Tareas.php");
+    // exit();
+
 }
+
+
+
 ?>
 
 

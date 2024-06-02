@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id"])) {
+if (!isset($_SESSION["id"])) { //si no esta autenticado, le dice... sacate de aqui!!! >:(
     header('Location: Index.php');
     exit;
 }
@@ -10,6 +10,10 @@ $errores = [];
 $titulo = $contenido = $fechainicio = $fechafin = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $mensaje = '';
+    $tipo = '';
+
     $titulo = trim($_POST['titulo']);
     $contenido = trim($_POST['contenido']);
     $fechainicio = trim($_POST['fechainicio']);
@@ -39,12 +43,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nuevaTarea = $dao->agregarTarea($titulo, $contenido, $fechainicio, $fechafin, $usuarioId);
 
         if ($nuevaTarea) {
-            header('Location: Tareas.php');
-            exit;
+            $mensaje = 'Se agrego la tarea con exito :D';
+            $tipo = 'success';
         } else {
-            $errores['general'] = "Hubo un problema al guardar la tarea.";
+            $mensaje = 'No se pudo agregar la tarea :(';
+            $tipo = 'error';
         }
+        
     }
+    $_SESSION['mensaje'] = $mensaje;
+    $_SESSION['tipo'] = $tipo;
+    header('Location: Tareas.php');
+    exit;
 }
 ?>
 <!doctype html>
