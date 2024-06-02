@@ -1,3 +1,7 @@
+<?php
+session_start();
+
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -38,19 +42,19 @@
         $mensaje = '';
         $tipo = '';
 
-    if (isset($_POST['eliminarNotaId'])) {
-        $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
-        if ($notaId) {
-            $resultado = $daoNotas->eliminarNota($notaId);
-            if ($resultado) {
-                $mensaje = 'Nota eliminada con éxito.';
-                $tipo = 'success';
-            } else {
-                $mensaje = 'Error al eliminar la nota.';
-                $tipo = 'error';
-            }
-        }
-    }
+      if (isset($_POST['eliminarNotaId'])) {
+          $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
+          if ($notaId) {
+              $resultado = $daoNotas->eliminarNota($notaId);
+              if ($resultado) {
+                  $mensaje = 'Nota eliminada con éxito.';
+                  $tipo = 'success';
+              } else {
+                  $mensaje = 'Error al eliminar la nota.';
+                  $tipo = 'error';
+              }
+          }
+      }
   
     if (isset($_POST['modificarNotaId'], $_POST['titulo'], $_POST['contenido'])) {
       $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);

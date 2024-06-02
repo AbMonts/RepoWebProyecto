@@ -1,3 +1,8 @@
+<?php
+session_start();
+require("menuPrivado.php"); 
+require_once("../datos/DAOUsuario.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +24,10 @@
 </head>
 <body>
     <?php 
-        require("menuPrivado.php"); 
-        require_once("../datos/DAOUsuario.php");
-
+    
+    if (!isset($_SESSION['id'])) {
+        die("Acceso denegado.");
+    }
         // Inicializar variables
         $usuarioObj = null;
         $id = null;
@@ -31,10 +37,16 @@
             $id = $_GET['id'];
             $dao = new DAOUsuario();
             $usuarioObj = $dao->obtenerPorId($id);
+        }//agregar una velidacion si ya existe el correo
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $mensaje = '';
+            $tipo = '';
+        
         }
 
 
-        
+
         if (isset($_SESSION['errores'])) {
             $errores = $_SESSION['errores'];
             unset($_SESSION['errores']);
@@ -44,22 +56,8 @@
 ?>
 <main>
     <div class="container pt-4">
-    <?php
+<?php
 
-    if (isset($_POST["id"]) && is_numeric($_POST["id"])) {
-                //Se ha indicado que se debe eliminar un usuario
-        $dao = new DAOUsuario();
-        if ($dao->eliminar($_POST["id"])) {
-        $_SESSION["msg"] = "alert-success--Usuario eliminado exitosamente";
-        } else {
-        $_SESSION["msg"] = "alert-danger--No se ha podido eliminar al usuario seleccionado debido a que tiene procesos relacionados";
-        }
-    }
-    if (isset($_SESSION["msg"])) {
-        $msgInfo = explode("--", $_SESSION["msg"]);
-        echo "<div class='alert $msgInfo[0]'>$msgInfo[1]</div>";
-        unset($_SESSION["msg"]);
-    }
 ?>
             <form action="guardar_usuario.php" method="post" id="usuarioForm">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuarioObj->id ?? ''); ?>">

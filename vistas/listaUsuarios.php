@@ -1,3 +1,7 @@
+<?php
+session_start();
+require_once("../datos/DAOUsuario.php");
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -13,29 +17,71 @@
   <link  href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <?php 
+<?php 
   require("menuPrivado.php"); 
-  require_once("../datos/DAOUsuario.php");
+  
   ?>
   <main>
     <div class="container pt-4">
       <?php
+
+      if (!isset($_SESSION['id'])) {
+        die("Acceso denegado.");
+      }
+      if (!isset($_SESSION['id'])) {
+        echo "<div class='alert alert-danger'>Usuario no autenticado</div>";
+        header('Location: index.php');
+        exit;
+      }
+
+      $idUsuario = $_SESSION['id'];
+
+
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $mensaje = '';
+        $tipo = '';
         if (isset($_POST["id"]) && is_numeric($_POST["id"])) {
           //Se ha indicado que se debe eliminar un usuario
           $dao = new DAOUsuario();
           if ($dao->eliminar($_POST["id"])) {
-            $_SESSION["msg"] = "alert-success--Usuario eliminado exitósamente";
+            $mensaje =  "Usuario eliminado exitosamente :D";
+            $tipo = 'success';
           } else {
-            $_SESSION["msg"] = "alert-danger--No se ha podido eliminar al usuario seleccionado debido a que tiene procesos relacionados";
+            $mensaje =  "No se pudo actualizar el usuario :(";
+            $tipo = 'error';
           }
         }
 
-        if (isset($_SESSION["msg"])) {
-          $msgInfo = explode("--", $_SESSION["msg"]);
-          echo "<div class='alert $msgInfo[0]'>$msgInfo[1]</div>";
-          unset($_SESSION["msg"]);
+
+        $_SESSION['mensaje'] = $mensaje;
+        $_SESSION['tipo'] = $tipo;
+
+        header("Location: {$_SERVER['PHP_SELF']}");
+        exit();
+
+      }
+
+
+      if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
+        $mensaje = htmlspecialchars($_SESSION['mensaje']);
+        $tipo = htmlspecialchars($_SESSION['tipo']);
+        unset($_SESSION['mensaje']);
+        unset($_SESSION['tipo']);
+        echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
+      }
+
+?>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var alert = document.getElementById('alert');
+        if (alert) {
+            setTimeout(function() {
+                alert.style.display = 'none';
+            }, 5000); // Ocultar el mensaje después de 5 segundos
         }
-      ?>
+    });
+</script>
       <div>
         <a href="registroUsuarios.php" class="btn btn-primary mb-3">Agregar Usuario</a>
       </div>

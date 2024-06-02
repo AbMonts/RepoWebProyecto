@@ -6,6 +6,9 @@ require_once '../datos/DAOUsuario.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
+    $mensaje = '';
+    $tipo = '';
+
     if (isset($_POST['nombre']) && !empty($_POST['nombre']) &&
         isset($_POST['apellido1']) && !empty($_POST['apellido1']) &&
         isset($_POST['apellido2']) && !empty($_POST['apellido2']) &&
@@ -23,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores = [];
 
         if (empty($id) || !is_numeric($id)) {
-            $errores['id'] = "ID de usuario no válido.";
+            $errores['id'] = "ID de usuario no valido.";
         }
         if (empty($nombre)) {
             $errores['nombre'] = "El nombre es obligatorio.";
@@ -61,18 +64,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usuarioObj->contrasena = $contrasena;
 
             if ($dao->actualizar($usuarioObj)) {
-                $_SESSION['msg'] = "alert-success--Usuario actualizado exitosamente";
+                $mensaje =  "Usuario actualizado exitosamente :D";
+                $tipo = 'success';
             } else {
-                $_SESSION['msg'] = "alert-danger--Error al actualizar el usuario";
+                $mensaje =  "Error al actualizar el usuario";
+                $tipo = 'error';
             }
         }
     } else {
-        $_SESSION['msg'] = "alert-danger--Faltan datos requeridos";
+        $mensaje =  "Faltan datos por llenar ";
+        $tipo = 'error';
     }
-} else {
-    $_SESSION['msg'] = "alert-danger--Método de solicitud no válido";
-}
 
-header("Location: listaUsuarios.php");
-exit();
+    $_SESSION['mensaje'] = $mensaje;
+    $_SESSION['tipo'] = $tipo;
+    
+    header("Location: listaUsuarios.php");
+    exit();
+
+
+} else {
+    $mensaje =  "Metodo de solicitud no valido";
+    $tipo = 'error';
+}
+    $_SESSION['mensaje'] = $mensaje;
+    $_SESSION['tipo'] = $tipo;
+    
+    header("Location: listaUsuarios.php");
+    exit();
 ?>

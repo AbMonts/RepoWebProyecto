@@ -3,42 +3,8 @@ session_start();
 require_once '../datos/Conexion.php';
 require_once '../modelos/Usuario.php';
 require_once '../datos/DAOUsuario.php';
-
-$id = null;
-$nombre = "";
-$correo = "";
-$apellido1 = "";
-$apellido2 = "";
-$rol = "";
-$contrasena = "";
-
-$errores = $_SESSION['errores'] ?? [];
-$data = $_SESSION['data'] ?? [];
-$id = 0;
-
-
-//var_dump('usuario con id: ' .$_GET['id']);
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-  $id = $_GET['id'];
-  $dao = new DAOUsuario();
-  $usuarioObj = $dao->obtenerPorId($id);
-  if ($usuarioObj) {
-      $nombre = $usuarioObj->nombre;
-      $correo = $usuarioObj->correo;
-      $apellido1 = $usuarioObj->apellido1;
-      $apellido2 = $usuarioObj->apellido2;
-      $rol = $usuarioObj->rol;
-      $contrasena = $usuarioObj->contrasena;
-  } else {
-      echo "No se encontró el usuario con ID: " . htmlspecialchars($id);
-      exit;
-  }
-} else {
-  echo "ID de usuario no válido";
-  exit;
-}
-
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -69,6 +35,57 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   <main>
     <div class="container pt-4">
       <h1>Editar Usuario</h1>
+
+<?php
+if (!isset($_SESSION['id'])) {
+  die("Acceso denegado.");
+}
+if (!isset($_SESSION['id'])) {
+  echo "<div class='alert alert-danger'>Usuario no autenticado</div>";
+  header('Location: index.php');
+  exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $mensaje = '';
+      $tipo = '';
+
+      $errores = [];
+      $nombre = trim($_POST['nombre']);
+      $correo = trim($_POST['correo']);
+      $apellido1 = trim($_POST['apellido1']);
+      $apellido2 = trim($_POST['apellido2']);
+      $rol = trim($_POST['rol']);
+      $contrasena = trim($_POST['contrasena']);
+
+}
+    if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+      $id = $_GET['id'];
+      $dao = new DAOUsuario();
+      $usuarioObj = $dao->obtenerPorId($id);
+      if ($usuarioObj) {
+          $nombre = $usuarioObj->nombre;
+          $correo = $usuarioObj->correo;
+          $apellido1 = $usuarioObj->apellido1;
+          $apellido2 = $usuarioObj->apellido2;
+          $rol = $usuarioObj->rol;
+          $contrasena = $usuarioObj->contrasena;
+      } else {
+        $mensaje  = 'No se encontro el usuario.';
+        $tipo = 'error';
+          header("Location: listaUsuarios.php");
+          exit();
+      }
+    } else {
+      $mensaje  = 'Usuario no identificado.';
+      $tipo = 'error';
+      header("Location: listaUsuarios.php");
+      exit();
+    }
+
+?>
+
+    
       <form action="actualizar_usuario.php" method="post">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>">
         <div class="mb-3">
