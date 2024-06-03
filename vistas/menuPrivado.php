@@ -32,31 +32,28 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                         <a class="nav-link active" aria-current="page" href="home.php">Inicio</a>
                     </li>
 
-                    <?php if ($currentFile != 'home.php' && $usuarioRol == 'admin') { ?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Seguimiento</a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="listaUsuarios.php">Usuarios</a>
-                                </li>
-                                <!-- <li><a class="dropdown-item" href="#">Lo que puedes lograr</a></li> -->
-                            </ul>
+                    <?php if ($usuarioRol == 'admin' && $currentFile != 'registroUsuarios.php') { ?>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-lg btn-primary" href="listaUsuarios.php" style="margin: 0 5px;">Seguimiento</a>
                         </li>
                     <?php } ?>
 
-
-                    <?php if ($usuarioRol == 'usuario' && $currentFile != 'home.php') { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            Actividades
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="Tareas.php">Tareas</a></li>
-                            <li><a class="dropdown-item" href="Notas.php">Notas</a></li>
-                            <li><a class="dropdown-item" href="Eventos.php">Eventos</a></li>
-                        </ul>
-                    </li>
+                    <?php if ($usuarioRol == 'usuario') { ?>
+                        <?php if ($currentFile != 'Tareas.php') { ?>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-lg btn-primary" href="Tareas.php" style="margin: 0 5px;">Tareas</a>
+                            </li>
+                        <?php } ?>
+                        <?php if ($currentFile != 'Notas.php') { ?>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-lg btn-primary" href="Notas.php" style="margin: 0 5px;">Notas</a>
+                            </li>
+                        <?php } ?>
+                        <?php if ($currentFile != 'Eventos.php') { ?>
+                            <li> class="nav-item">
+                                <a class="nav-link btn btn-lg btn-primary" href="Eventos.php" style="margin: 0 5px;">Eventos</a>
+                            </li>
+                        <?php } ?>
                     <?php } ?>
                     
                     <li class="nav-item" style="display: none;">
@@ -73,3 +70,10 @@ $currentFile = basename($_SERVER['PHP_SELF']);
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .nav-link.btn:hover {
+        background-color: #36677D ; /* Cambia este color al que desees */
+        color: #ffff;
+    }
+</style>
