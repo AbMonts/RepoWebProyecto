@@ -283,14 +283,28 @@ public function obtenerPorCorreo($correo) {
         $sentenciaSQL = $this->conexion->prepare("SELECT * FROM usuarios WHERE correo=?");
         $sentenciaSQL->execute([$correo]);
         $fila = $sentenciaSQL->fetch(PDO::FETCH_OBJ);
-        
-        return $fila ? true : false;
+
+        if ($fila) {
+            // Crear objeto Usuario y asignar los datos del resultado de la consulta
+            $usuario = new Usuario();
+            $usuario->id = $fila->id;
+            $usuario->nombre = $fila->nombre;
+            $usuario->apellido1 = $fila->apellido1;
+            $usuario->apellido2 = $fila->apellido2;
+            $usuario->correo = $fila->correo;
+            $usuario->rol = $fila->rol;
+            $usuario->contrasena = $fila->contrasena;
+            return $usuario;
+        } else {
+            return false;
+        }
     } catch (Exception $e) {
         return false;
     } finally {
         Conexion::desconectar();
     }
 }
+
 
 public function obtenerPorUsuario($usuario) {
     try {
