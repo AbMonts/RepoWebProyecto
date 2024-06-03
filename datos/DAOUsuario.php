@@ -275,4 +275,37 @@ class DAOUsuario
     }
 }
 
+
+
+public function obtenerPorCorreo($correo) {
+    try {
+        $this->conectar();
+        $sentenciaSQL = $this->conexion->prepare("SELECT * FROM usuarios WHERE correo=?");
+        $sentenciaSQL->execute([$correo]);
+        $fila = $sentenciaSQL->fetch(PDO::FETCH_OBJ);
+        
+        return $fila ? true : false;
+    } catch (Exception $e) {
+        return false;
+    } finally {
+        Conexion::desconectar();
+    }
+}
+
+public function obtenerPorUsuario($usuario) {
+    try {
+        $this->conectar();
+        $sentenciaSQL = $this->conexion->prepare("SELECT usuario FROM usuarios WHERE usuario=?");
+        $sentenciaSQL->execute([$usuario]);
+        $fila = $sentenciaSQL->fetch(PDO::FETCH_OBJ);
+        
+        return $fila ? true : false;
+    } catch (Exception $e) {
+        return false;
+    } finally {
+        Conexion::desconectar();
+    }
+}
+
+
 }

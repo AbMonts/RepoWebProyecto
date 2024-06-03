@@ -82,11 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       header("Location: listaUsuarios.php");
       exit();
     }
-
 ?>
 
-    
-      <form action="actualizar_usuario.php" method="post">
+      <form id="usuarioForm" action="actualizar_usuario.php" method="post">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>">
         <div class="mb-3">
           <label for="nombre" class="form-label">Nombre</label>

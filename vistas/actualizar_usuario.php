@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores = [];
 
         if (empty($id) || !is_numeric($id)) {
-            $errores['id'] = "ID de usuario no valido.";
+            $errores['id'] = "ID de usuario no válido.";
         }
         if (empty($nombre)) {
             $errores['nombre'] = "El nombre es obligatorio.";
@@ -47,13 +47,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errores['contrasena'] = "La contraseña debe tener al menos 6 caracteres.";
         }
 
+        // Verifica si el correo ya existe
+        $dao = new DAOUsuario();
+        if ($dao->obtenerPorCorreo($correo)) {
+            $errores['correo'] = "El correo ya está en uso. Por favor, elige otro.";
+        }
+
         if (count($errores) > 0) {
             $_SESSION['errores'] = $errores;
             $_SESSION['data'] = $_POST;
             header("Location: EditarUsuario.php?id=" . htmlspecialchars($id));
             exit;
         } else {
-            $dao = new DAOUsuario();
             $usuarioObj = new Usuario();
             $usuarioObj->id = $id;
             $usuarioObj->nombre = $nombre;
@@ -72,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     } else {
-        $mensaje =  "Faltan datos por llenar ";
+        $mensaje =  "Faltan datos por llenar";
         $tipo = 'error';
     }
 
@@ -82,14 +87,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: listaUsuarios.php");
     exit();
 
-
 } else {
-    $mensaje =  "Metodo de solicitud no valido";
+    $mensaje =  "Método de solicitud no válido";
     $tipo = 'error';
 }
-    $_SESSION['mensaje'] = $mensaje;
-    $_SESSION['tipo'] = $tipo;
-    
-    header("Location: listaUsuarios.php");
-    exit();
+$_SESSION['mensaje'] = $mensaje;
+$_SESSION['tipo'] = $tipo;
+
+header("Location: listaUsuarios.php");
+exit();
 ?>
