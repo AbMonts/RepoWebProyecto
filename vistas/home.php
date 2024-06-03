@@ -1,36 +1,10 @@
 <?php
 session_start();
 require("menuPrivado.php");
-//con fecha fin, fecha inicio y fecha actual se determinara el tiempo que queda
-function calcularTiempoRestante($fechaInicio, $fechaFin) {
-  $fechaInicio = new DateTime($fechaInicio);
-  $fechaFin = new DateTime($fechaFin);
-  $fechaActual = new DateTime();
-
-  $intervaloTotal = $fechaInicio->diff($fechaFin);
-  $intervaloRestante = $fechaActual->diff($fechaFin);
-
-  $totalDias = $intervaloTotal->days;
-$diasRestantes = $intervaloRestante->days;
-
-// Ajustar $totalDias a 1 si es igual a 0
-if ($totalDias == 0) {
-    $totalDias = 1;
-}
-
-$porcentajeRestante = 100 - (($diasRestantes / $totalDias) * 100);
- //A;adir que por defecto totalDias sea 1
-
-  // Asegurarse de que el porcentaje esté en el rango de 0 a 100
-  if ($porcentajeRestante < 0) {
-      $porcentajeRestante = 0;
-  } elseif ($porcentajeRestante > 100) {
-      $porcentajeRestante = 100;
-  }
-
-  return [$diasRestantes, $porcentajeRestante];
-}
 ?>
+
+
+
 
 <!doctype html>
 <html lang="es">
@@ -135,34 +109,6 @@ $porcentajeRestante = 100 - (($diasRestantes / $totalDias) * 100);
             </div>
         </a>
     </div>
-  <?php endif; ?>
-
-  <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario'): ?>
-    <?php
-    require_once("../datos/DAOEventos.php");
-    $idUsuario = $_SESSION['id'];
-    $daoEvento = new DAOEvento();
-    $eventos = $daoEvento->obtenerEventosDelMes($idUsuario);
-    ?>
-    <div class="card-body toast-container py-5">
-    <?php foreach ($eventos as $evento):
-        list($diasRestantes, $porcentajeRestante) = calcularTiempoRestante($evento->fechainicio, $evento->fechafin);
-    ?>
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto"><?php echo htmlspecialchars($evento->titulo); ?></strong>
-            <small class="text-muted"><?php echo htmlspecialchars($evento->fechainicio); ?></small>
-        </div>
-        <div class="toast-body">
-            <?php echo htmlspecialchars($evento->descripcion); ?>
-            <div><strong>Fecha Fin:</strong> <?php echo htmlspecialchars($evento->fechafin); ?></div>
-            <div class="progress mt-2">
-                <div class="progress-bar" role="progressbar" style="width: <?php echo $porcentajeRestante; ?>%;" aria-valuenow="<?php echo $porcentajeRestante; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($porcentajeRestante, 2); ?>%</div>
-            </div>
-        </div>
-    </div>
-    <?php endforeach; ?>
-</div>
   <?php endif; ?>
 </main>
 

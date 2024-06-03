@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -37,64 +36,84 @@ session_start();
         return strlen($campo) <= $longitudMaxima;
     }
 
+    $errores = [];
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $mensaje = '';
         $tipo = '';
 
-      if (isset($_POST['eliminarNotaId'])) {
-          $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
-          if ($notaId) {
-              $resultado = $daoNotas->eliminarNota($notaId);
-              if ($resultado) {
-                  $mensaje = 'Nota eliminada con éxito.';
-                  $tipo = 'success';
-              } else {
-                  $mensaje = 'Error al eliminar la nota.';
-                  $tipo = 'error';
-              }
-          }
-      }
-  
-    if (isset($_POST['modificarNotaId'], $_POST['titulo'], $_POST['contenido'])) {
-      $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
-      $titulo = $_POST['titulo'];
-      $contenido = $_POST['contenido'];
-
-      if ($notaId && $titulo && $contenido && validarLongitud($titulo, 255) && validarLongitud($contenido, 1000)) {
-          // Prevención de inyección SQL
-          $titulo = htmlspecialchars($titulo);
-          $contenido = htmlspecialchars($contenido);
-          
-          $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
-          if ($resultado) {
-              $mensaje = 'Nota modificada con éxito.';
-              $tipo = 'success';
-          } else {
-              $mensaje = 'Error al modificar la nota.';
-              $tipo = 'error';
-          }
-      }
-  }
-
-  //el de agregar nota el proceso se encuentra en ---> agregarNota.php
-  
-   
-
-    $_SESSION['mensaje'] = $mensaje;
-    $_SESSION['tipo'] = $tipo;
+        if (isset($_POST['eliminarNotaId'])) {
+            $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
+            if ($notaId) {
+                $resultado = $daoNotas->eliminarNota($notaId);
+                if ($resultado) {
+                    $mensaje = 'Nota eliminada con éxito.';
+                    $tipo = 'success';
+                } else {
+                    $mensaje = 'Error al eliminar la nota.';
+                    $tipo = 'error';
+                }
+            }
+        }
     
-    header("Location: {$_SERVER['PHP_SELF']}");
-    exit();
-}
+        if (isset($_POST['modificarNotaId'], $_POST['titulo'], $_POST['contenido'])) {
+            $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
+            $titulo = $_POST['titulo'];
+            $contenido = $_POST['contenido'];
 
-if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
-  $mensaje = htmlspecialchars($_SESSION['mensaje']);
-  $tipo = htmlspecialchars($_SESSION['tipo']);
-  unset($_SESSION['mensaje']);
-  unset($_SESSION['tipo']);
-  echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
-}
+            if (!$titulo) {
+                $errores['titulo'] = 'El título no puede estar vacío.';
+            } elseif (!validarLongitud($titulo, 255)) {
+                $errores['titulo'] = 'El título no puede tener más de 255 caracteres.';
+            }
+
+            if (!$contenido) {
+                $errores['contenido'] = 'El contenido no puede estar vacío.';
+            } elseif (!validarLongitud($contenido, 1000)) {
+                $errores['contenido'] = 'El contenido no puede tener más de 1000 caracteres.';
+            }
+
+            if (empty($errores)) {
+                // Prevención de inyección SQL
+                $titulo = htmlspecialchars($titulo);
+                $contenido = htmlspecialchars($contenido);
+
+                $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
+                if ($resultado) {
+                    $mensaje = 'Nota modificada con éxito.';
+                    $tipo = 'success';
+                } else {
+                    $mensaje = 'Error al modificar la nota.';
+                    $tipo = 'error';
+                }
+            } else {
+                $mensaje = 'Por favor corrija los errores en el formulario.';
+                $tipo = 'error';
+            }
+        }
+
+        $_SESSION['mensaje'] = $mensaje;
+        $_SESSION['tipo'] = $tipo;
+        $_SESSION['errores'] = $errores;
+        
+        header("Location: {$_SERVER['PHP_SELF']}");
+        exit();
+    }
+
+    if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
+        $mensaje = htmlspecialchars($_SESSION['mensaje']);
+        $tipo = htmlspecialchars($_SESSION['tipo']);
+        unset($_SESSION['mensaje']);
+        unset($_SESSION['tipo']);
+        echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
+    }
+
+    if (isset($_SESSION['errores'])) {
+        $errores = $_SESSION['errores'];
+        unset($_SESSION['errores']);
+    } else {
+        $errores = [];
+    }
   ?>
 
 <script>
@@ -170,10 +189,18 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
             <div class="mb-3">
               <label for="titulo" class="form-label">Título</label>
               <input type="text" class="form-control" id="titulo" name="titulo" >
+              <span id="tituloError"></span>
+              <?php if (isset($errores['titulo'])): ?>
+                  <div class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></div>
+              <?php endif; ?>
             </div>
             <div class="mb-3">
               <label for="contenido" class="form-label">Contenido</label>
               <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
+              <span id="contenidoError"></span>
+              <?php if (isset($errores['contenido'])): ?>
+                  <div class="text-danger"><?php echo htmlspecialchars($errores['contenido']); ?></div>
+              <?php endif; ?>
             </div>
             <div class="mb-3">
               <label for="archivoNota" class="form-label">O cargar desde archivo</label>
@@ -223,10 +250,18 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
             <div class="mb-3">
               <label for="modificarTitulo" class="form-label">Título</label>
               <input type="text" class="form-control" id="modificarTitulo" name="titulo" >
+              <span id="modificarTituloError"></span>
+              <?php if (isset($errores['titulo'])): ?>
+                  <div class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></div>
+              <?php endif; ?>
             </div>
             <div class="mb-3">
               <label for="modificarContenido" class="form-label">Contenido</label>
               <textarea class="form-control" id="modificarContenido" name="contenido" rows="3"></textarea>
+              <span id="modificarContenidoError"></span>
+              <?php if (isset($errores['contenido'])): ?>
+                  <div class="text-danger"><?php echo htmlspecialchars($errores['contenido']); ?></div>
+              <?php endif; ?>
             </div>
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           </form>
@@ -237,7 +272,7 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
-  <script src="js/notas.js"></script>
-  
+  <!-- <script src="js/notas.js"></script> -->
+  <script src="js/notas2.js"></script>
   </body>
   </html>
