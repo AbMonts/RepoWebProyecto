@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function() {
     var alert = document.getElementById('alert');
     if (alert) {
@@ -7,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Validación en tiempo real
+    const formAgregarNota = document.getElementById('formAgregarNota');
     const tituloInput = document.getElementById('titulo');
     const contenidoTextarea = document.getElementById('contenido');
     const modificarTituloInput = document.getElementById('modificarTitulo');
@@ -34,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     contenidoTextarea.addEventListener('keyup', function() {
-        validarCampo(contenidoTextarea, 1000, 10, 'contenidoError', 'El contenido debe tener entre 10 y 1000 caracteres.');
+        validarCampo(contenidoTextarea, 1000, 4, 'contenidoError', 'El contenido debe tener entre 4 y 1000 caracteres.');
     });
 
     modificarTituloInput.addEventListener('keyup', function() {
@@ -43,6 +45,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     modificarContenidoTextarea.addEventListener('keyup', function() {
         validarCampo(modificarContenidoTextarea, 1000, 10, 'modificarContenidoError', 'El contenido debe tener entre 10 y 1000 caracteres.');
+    });
+
+    formAgregarNota.addEventListener('submit', function(event) {
+        const isTituloValid = validarCampo(tituloInput, 255, 4, 'tituloError', 'El título debe tener entre 4 y 255 caracteres.');
+        const isContenidoValid = validarCampo(contenidoTextarea, 1000, 4, 'contenidoError', 'El contenido debe tener entre 4 y 1000 caracteres.');
+
+        if (!isTituloValid || !isContenidoValid) {
+            event.preventDefault();
+        }
     });
 });
 
@@ -59,3 +70,4 @@ function modificarNota(id, titulo, contenido) {
     var modificarNotaModal = new bootstrap.Modal(document.getElementById('modificarNotaModal'));
     modificarNotaModal.show();
 }
+

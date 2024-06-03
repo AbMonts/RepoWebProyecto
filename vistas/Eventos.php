@@ -29,18 +29,21 @@ require_once '../datos/DAOEventos.php';
     <h1 class="mb-4">Eventos del Usuario</h1>
    
 <?php 
+
+
 if (!isset($_SESSION['id'])) {
     die("Acceso denegado.");
-}
-if (!isset($_SESSION['id'])) {
-    echo "<div class='alert alert-danger'>Usuario no autenticado</div>";
-    header('Location: index.php');
-    exit;
 }
 
 $idUsuario = $_SESSION['id'];
 $dao = new DAOEvento();
 $eventos = $dao->obtenerPorId($idUsuario);
+
+function validarLongitud($campo, $longitudMaxima) {
+    return strlen($campo) <= $longitudMaxima;
+}
+
+$errores = [];
 
 if (!$eventos) {
     $eventos = [];
@@ -55,67 +58,125 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($eventoId) {
             $resultado = $dao->eliminar($eventoId);
             if ($resultado) {
-               $mensaje = 'Evento eliminado con exito :D';
+                $mensaje = 'Evento eliminado con éxito :D';
                 $tipo = 'success';
             } else {
-                $mensaje = 'Error al eliminar el eventoo :(';
+                $mensaje = 'Error al eliminar el evento :(';
                 $tipo = 'error';
             }
         } else {
             $mensaje = 'No se pudo acceder al evento :C';
             $tipo = 'error';
         }
-      
     } 
+
     if (isset($_POST['modificarEventoId'])) {
         $eventoId = filter_input(INPUT_POST, 'modificarEventoId', FILTER_VALIDATE_INT);
         $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
         $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
         $fechainicio = filter_input(INPUT_POST, 'fechainicio', FILTER_SANITIZE_STRING);
         $fechafin = filter_input(INPUT_POST, 'fechafin', FILTER_SANITIZE_STRING);
-        $idUsuario = $_SESSION['id'];
 
-        if ($eventoId && $titulo && $descripcion && $fechainicio && $fechafin) {
+        if (!$titulo) {
+            $errores['titulo'] = 'El título no puede estar vacío.';
+        } elseif (!validarLongitud($titulo, 255)) {
+            $errores['titulo'] = 'El título no puede tener más de 255 caracteres.';
+        }
+
+        if (!$descripcion) {
+            $errores['descripcion'] = 'La descripción no puede estar vacía.';
+        } elseif (!validarLongitud($descripcion, 1000)) {
+            $errores['descripcion'] = 'La descripción no puede tener más de 1000 caracteres.';
+        }
+
+        if (!$fechainicio) {
+            $errores['fechainicio'] = 'La fecha de inicio no puede estar vacía.';
+        } 
+
+        if (!$fechafin) {
+            $errores['fechafin'] = 'La fecha de fin no puede estar vacía.';
+        }
+
+         // Validación de que la fecha de fin no sea menor a la fecha de inicio
+         if ($fechainicio && $fechafin && strtotime($fechainicio) > strtotime($fechafin)) {
+            $errores['fechafin'] = 'La fecha de fin no puede ser menor que la fecha de inicio.';
+        }
+        if (empty($errores)) {
+            // Prevención de inyección SQL
+            $titulo = htmlspecialchars($titulo);
+            $descripcion = htmlspecialchars($descripcion);
+            $fechainicio = htmlspecialchars($fechainicio);
+            $fechafin = htmlspecialchars($fechafin);
+            
             $resultado = $dao->actualizar($eventoId, $titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
             if ($resultado) {
-                $mensaje = 'Evento modificado con exito :D';
+                $mensaje = 'Evento modificado con éxito.';
                 $tipo = 'success';
             } else {
-                $mensaje ='No se pudo modificar el evento :(';
+                $mensaje = 'Error al modificar el evento.';
                 $tipo = 'error';
             }
         } else {
-            $mensaje = 'Error al modificar el evento :C';
+            $mensaje = 'Por favor corrija los errores en el formulario.';
             $tipo = 'error';
         }
+    }
 
-    } 
-    
     if (isset($_POST['agregarEvento'])) {
         $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
         $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
         $fechainicio = filter_input(INPUT_POST, 'fechainicio', FILTER_SANITIZE_STRING);
         $fechafin = filter_input(INPUT_POST, 'fechafin', FILTER_SANITIZE_STRING);
-        $idUsuario = $_SESSION['id'];
 
-        if ($titulo && $descripcion && $fechainicio && $fechafin) {
+        if (!$titulo) {
+            $errores['titulo'] = 'El título no puede estar vacío.';
+        } elseif (!validarLongitud($titulo, 255)) {
+            $errores['titulo'] = 'El título no puede tener más de 255 caracteres.';
+        }
+
+        if (!$descripcion) {
+            $errores['descripcion'] = 'La descripción no puede estar vacía.';
+        } elseif (!validarLongitud($descripcion, 1000)) {
+            $errores['descripcion'] = 'La descripción no puede tener más de 1000 caracteres.';
+        }
+
+        if (!$fechainicio) {
+            $errores['fechainicio'] = 'La fecha de inicio no puede estar vacía.';
+        } 
+
+        if (!$fechafin) {
+            $errores['fechafin'] = 'La fecha de fin no puede estar vacía.';
+        }
+
+        if ($fechainicio && $fechafin && strtotime($fechainicio) > strtotime($fechafin)) {
+            $errores['fechafin'] = 'La fecha de fin no puede ser menor que la fecha de inicio.';
+        }
+        if (empty($errores)) {
+            // Prevención de inyección SQL
+            $titulo = htmlspecialchars($titulo);
+            $descripcion = htmlspecialchars($descripcion);
+            $fechainicio = htmlspecialchars($fechainicio);
+            $fechafin = htmlspecialchars($fechafin);
+            
             $resultado = $dao->agregar($titulo, $descripcion, $fechainicio, $fechafin, $idUsuario);
             if ($resultado) {
-                $mensaje ='Se agrego el evento con exito :D';
+                $mensaje = 'Se agregó el evento con éxito :D';
                 $tipo = 'success';
             } else {
-                $mensaje ='No se pudo agregar el evento :(';
+                $mensaje = 'No se pudo agregar el evento :(';
                 $tipo = 'error';
             }
         } else {
-            $mensaje = 'Datos invalidos para agregar el evento.';
-            $tipo =  'error';
+            $mensaje = 'Datos inválidos para agregar el evento.';
+            $tipo = 'error';
         }
-    
+
+       
     }
 
     $_SESSION['mensaje'] = $mensaje;
     $_SESSION['tipo'] = $tipo;
+    $_SESSION['errores'] = $errores;
     
     header("Location: {$_SERVER['PHP_SELF']}");
     exit();
@@ -127,9 +188,9 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
     unset($_SESSION['mensaje']);
     unset($_SESSION['tipo']);
     echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
-  }
-
+}
 ?>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var alert = document.getElementById('alert');
@@ -160,7 +221,6 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
         ?>
     </div>
 </div>
-
 <!-- Modal para agregar evento -->
 <div class="modal fade" id="agregarEventoModal" tabindex="-1" aria-labelledby="agregarEventoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -173,25 +233,37 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
                 <form id="formAgregarEvento" method="post" action="">
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" >
-                        <span id="tituloError" class="invalid-feedback">El título es obligatorio y debe tener al menos 3 caracteres.</span>
+                        <input type="text" class="form-control" id="titulo" name="titulo">
+                        <span id="tituloError" ></span>
+                        <?php if (isset($errores['titulo'])): ?>
+                        <div class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" ></textarea>
-                        <span id="descripcionError" class="invalid-feedback">La descripción es obligatoria y debe tener al menos 3 caracteres.</span>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                        <span id="descripcionError" ></span>
+                        <?php if (isset($errores['descripcion'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['descripcion']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="fechainicio" class="form-label">Fecha de Inicio</label>
-                        <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio" >
-                        <span id="fechainicioError" class="invalid-feedback">La fecha de inicio es obligatoria.</span>
+                        <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio">
+                        <span id="fechainicioError" ></span>
+                        <?php if (isset($errores['fechainicio'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['fechainicio']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="fechafin" class="form-label">Fecha de Fin</label>
-                        <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" >
-                        <span id="fechafinError" class="invalid-feedback">La fecha de fin es obligatoria y debe ser mayor o igual a la fecha de inicio.</span>
+                        <input type="datetime-local" class="form-control" id="fechafin" name="fechafin">
+                        <span id="fechafinError" ></span>
+                        <?php if (isset($errores['fechafin'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['fechafin']); ?></div>
+                        <?php endif; ?>
                     </div>
-                    <input type="hidden" name="idUsuario" value="<?php echo $idUsuario; ?>">
+                    <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($_SESSION['id']); ?>">
                     <input type="hidden" name="agregarEvento" value="1">
                     <button type="submit" class="btn btn-primary">Guardar Evento</button>
                 </form>
@@ -199,6 +271,7 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
         </div>
     </div>
 </div>
+
 
 <!-- Modal de confirmación de eliminación -->
 <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
@@ -237,22 +310,34 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
                     <div class="mb-3">
                         <label for="modificarTitulo" class="form-label">Título</label>
                         <input type="text" class="form-control" id="modificarTitulo" name="titulo" >
-                        <span id="modificarTituloError" class="invalid-feedback">El título es obligatorio y debe tener al menos 3 caracteres.</span>
+                        <span id="modificarTituloError" class=""></span>
+                        <?php if (isset($errores['titulo'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="modificarDescripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" id="modificarDescripcion" name="descripcion" rows="3" ></textarea>
-                        <span id="modificarDescripcionError" class="invalid-feedback">La descripción es obligatoria y debe tener al menos 3 caracteres.</span>
+                        <span id="modificarDescripcionError" class=""></span>
+                        <?php if (isset($errores['descripcion'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['descripcion']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="modificarFechaInicio" class="form-label">Fecha de Inicio</label>
                         <input type="datetime-local" class="form-control" id="modificarFechaInicio" name="fechainicio" >
-                        <span id="modificarFechaInicioError" class="invalid-feedback">La fecha de inicio es obligatoria.</span>
+                        <span id="modificarFechaInicioError" class=""></span>
+                        <?php if (isset($errores['fechainicio'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['fechainicio']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="modificarFechaFin" class="form-label">Fecha de Fin</label>
                         <input type="datetime-local" class="form-control" id="modificarFechaFin" name="fechafin" >
-                        <span id="modificarFechaFinError" class="invalid-feedback">La fecha de fin es obligatoria y debe ser mayor o igual a la fecha de inicio.</span>
+                        <span id="modificarFechaFinError" class=""></span>
+                        <?php if (isset($errores['fechafin'])): ?>
+                            <div class="text-danger"><?php echo htmlspecialchars($errores['fechafin']); ?></div>
+                        <?php endif; ?>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </form>
@@ -309,65 +394,33 @@ function cerrarModal(modalId) {
     modal.hide();
 }
 
-document.getElementById('formEliminarEvento').addEventListener('submit', function(event) {
-    cerrarModal('editModal');
-    cerrarModal('confirmarEliminarModal');
-});
 
-document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
-    if (!validarFormulario('formAgregarEvento')) {
-        event.preventDefault();
-    }
-});
 
-document.getElementById('formModificarEvento').addEventListener('submit', function(event) {
-    if (!validarFormulario('formModificarEvento')) {
-        event.preventDefault();
-    }
-});
+// document.getElementById('formEliminarEvento').addEventListener('submit', function(event) {
+//     cerrarModal('editModal');
+//     cerrarModal('confirmarEliminarModal');
+// });
 
-function validarFormulario(formId) {
-    const form = document.getElementById(formId);
-    let isValid = true;
+// document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
+//     if (!validarFormulario('formAgregarEvento')) {
+//         event.preventDefault();
+//     }
+// });
 
-    form.querySelectorAll('input, textarea').forEach(input => {
-        if (!input.checkValidity()) {
-            input.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
-        }
-    });
+// document.getElementById('formModificarEvento').addEventListener('submit', function(event) {
+//     if (!validarFormulario('formModificarEvento')) {
+//         event.preventDefault();
+//     }
+// });
 
-    const fechainicio = form.querySelector('#fechainicio') ? form.querySelector('#fechainicio').value : form.querySelector('#modificarFechaInicio').value;
-    const fechafin = form.querySelector('#fechafin') ? form.querySelector('#fechafin').value : form.querySelector('#modificarFechaFin').value;
 
-    if (new Date(fechainicio) > new Date(fechafin)) {
-        const fechaFinInput = form.querySelector('#fechafin') ? form.querySelector('#fechafin') : form.querySelector('#modificarFechaFin');
-        fechaFinInput.classList.add('is-invalid');
-        isValid = false;
-    }
 
-    return isValid;
-}
 
-document.querySelectorAll('input, textarea').forEach(input => {
-    input.addEventListener('input', () => {
-        if (input.checkValidity()) {
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
-        } else {
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
-        }
-    });
-});
 </script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/AgregarEventos.js"></script>
 <script src="js/eventos.js"></script>
 </body>
 </html>

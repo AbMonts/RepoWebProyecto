@@ -22,99 +22,101 @@ session_start();
   <h2>Notas</h2>
   
   <?php
-    require_once '../datos/DAONotas.php';
 
-    if (!isset($_SESSION['id'])) {
-        die("Acceso denegado.");
-    }
+require_once '../datos/DAONotas.php';
 
-    $daoNotas = new DAONotas();
-    $idUsuario = $_SESSION['id']; 
-    $notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
+if (!isset($_SESSION['id'])) {
+    die("Acceso denegado.");
+}
 
-    function validarLongitud($campo, $longitudMaxima) {
-        return strlen($campo) <= $longitudMaxima;
-    }
+$daoNotas = new DAONotas();
+$idUsuario = $_SESSION['id']; 
+$notas = $daoNotas->obtenerNotasPorUsuario($idUsuario);
 
-    $errores = [];
+function validarLongitud($campo, $longitudMaxima) {
+    return strlen($campo) <= $longitudMaxima;
+}
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $mensaje = '';
-        $tipo = '';
+$errores = [];
 
-        if (isset($_POST['eliminarNotaId'])) {
-            $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
-            if ($notaId) {
-                $resultado = $daoNotas->eliminarNota($notaId);
-                if ($resultado) {
-                    $mensaje = 'Nota eliminada con éxito.';
-                    $tipo = 'success';
-                } else {
-                    $mensaje = 'Error al eliminar la nota.';
-                    $tipo = 'error';
-                }
-            }
-        }
-    
-        if (isset($_POST['modificarNotaId'], $_POST['titulo'], $_POST['contenido'])) {
-            $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
-            $titulo = $_POST['titulo'];
-            $contenido = $_POST['contenido'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $mensaje = '';
+    $tipo = '';
 
-            if (!$titulo) {
-                $errores['titulo'] = 'El título no puede estar vacío.';
-            } elseif (!validarLongitud($titulo, 255)) {
-                $errores['titulo'] = 'El título no puede tener más de 255 caracteres.';
-            }
-
-            if (!$contenido) {
-                $errores['contenido'] = 'El contenido no puede estar vacío.';
-            } elseif (!validarLongitud($contenido, 1000)) {
-                $errores['contenido'] = 'El contenido no puede tener más de 1000 caracteres.';
-            }
-
-            if (empty($errores)) {
-                // Prevención de inyección SQL
-                $titulo = htmlspecialchars($titulo);
-                $contenido = htmlspecialchars($contenido);
-
-                $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
-                if ($resultado) {
-                    $mensaje = 'Nota modificada con éxito.';
-                    $tipo = 'success';
-                } else {
-                    $mensaje = 'Error al modificar la nota.';
-                    $tipo = 'error';
-                }
+    if (isset($_POST['eliminarNotaId'])) {
+        $notaId = filter_input(INPUT_POST, 'eliminarNotaId', FILTER_VALIDATE_INT);
+        if ($notaId) {
+            $resultado = $daoNotas->eliminarNota($notaId);
+            if ($resultado) {
+                $mensaje = 'Nota eliminada con éxito.';
+                $tipo = 'success';
             } else {
-                $mensaje = 'Por favor corrija los errores en el formulario.';
+                $mensaje = 'Error al eliminar la nota.';
                 $tipo = 'error';
             }
         }
-
-        $_SESSION['mensaje'] = $mensaje;
-        $_SESSION['tipo'] = $tipo;
-        $_SESSION['errores'] = $errores;
-        
-        header("Location: {$_SERVER['PHP_SELF']}");
-        exit();
     }
 
-    if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
-        $mensaje = htmlspecialchars($_SESSION['mensaje']);
-        $tipo = htmlspecialchars($_SESSION['tipo']);
-        unset($_SESSION['mensaje']);
-        unset($_SESSION['tipo']);
-        echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
+    if (isset($_POST['modificarNotaId'], $_POST['titulo'], $_POST['contenido'])) {
+        $notaId = filter_input(INPUT_POST, 'modificarNotaId', FILTER_VALIDATE_INT);
+        $titulo = $_POST['titulo'];
+        $contenido = $_POST['contenido'];
+
+        if (!$titulo) {
+            $errores['titulo'] = 'El título no puede estar vacío.';
+        } elseif (!validarLongitud($titulo, 255)) {
+            $errores['titulo'] = 'El título no puede tener más de 255 caracteres.';
+        }
+
+        if (!$contenido) {
+            $errores['contenido'] = 'El contenido no puede estar vacío.';
+        } elseif (!validarLongitud($contenido, 1000)) {
+            $errores['contenido'] = 'El contenido no puede tener más de 1000 caracteres.';
+        }
+
+        if (empty($errores)) {
+            // Prevención de inyección SQL
+            $titulo = htmlspecialchars($titulo);
+            $contenido = htmlspecialchars($contenido);
+
+            $resultado = $daoNotas->modificarNota($notaId, $titulo, $contenido);
+            if ($resultado) {
+                $mensaje = 'Nota modificada con éxito.';
+                $tipo = 'success';
+            } else {
+                $mensaje = 'Error al modificar la nota.';
+                $tipo = 'error';
+            }
+        } else {
+            $mensaje = 'Por favor corrija los errores en el formulario.';
+            $tipo = 'error';
+        }
     }
 
-    if (isset($_SESSION['errores'])) {
-        $errores = $_SESSION['errores'];
-        unset($_SESSION['errores']);
-    } else {
-        $errores = [];
-    }
-  ?>
+    $_SESSION['mensaje'] = $mensaje;
+    $_SESSION['tipo'] = $tipo;
+    $_SESSION['errores'] = $errores;
+    
+    header("Location: {$_SERVER['PHP_SELF']}");
+    exit();
+}
+
+if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
+    $mensaje = htmlspecialchars($_SESSION['mensaje']);
+    $tipo = htmlspecialchars($_SESSION['tipo']);
+    unset($_SESSION['mensaje']);
+    unset($_SESSION['tipo']);
+    echo "<div id='alert' class='alert alert-{$tipo}'>{$mensaje}</div>";
+}
+
+if (isset($_SESSION['errores'])) {
+    $errores = $_SESSION['errores'];
+    unset($_SESSION['errores']);
+} else {
+    $errores = [];
+}
+?>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -176,43 +178,46 @@ session_start();
     </div>
   </div>
   
-  <!-- Modal para agregar nota -->
-  <div class="modal fade" id="agregarNotaModal" tabindex="-1" aria-labelledby="agregarNotaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="agregarNotaModalLabel">Agregar Nota</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data">
-            <div class="mb-3">
-              <label for="titulo" class="form-label">Título</label>
-              <input type="text" class="form-control" id="titulo" name="titulo" >
-              <span id="tituloError"></span>
-              <?php if (isset($errores['titulo'])): ?>
-                  <div class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></div>
-              <?php endif; ?>
-            </div>
-            <div class="mb-3">
-              <label for="contenido" class="form-label">Contenido</label>
-              <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
-              <span id="contenidoError"></span>
-              <?php if (isset($errores['contenido'])): ?>
-                  <div class="text-danger"><?php echo htmlspecialchars($errores['contenido']); ?></div>
-              <?php endif; ?>
-            </div>
-            <div class="mb-3">
-              <label for="archivoNota" class="form-label">O cargar desde archivo</label>
-              <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
-            </div>
-            <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($idUsuario); ?>">
-            <button type="submit" class="btn btn-primary">Guardar Nota</button>
-          </form>
-        </div>
+ <!-- Modal para agregar nota -->
+<!-- Modal para agregar nota -->
+<div class="modal fade" id="agregarNotaModal" tabindex="-1" aria-labelledby="agregarNotaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="agregarNotaModalLabel">Agregar Nota</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo">
+            <span id="tituloError"></span>
+            <?php if (isset($errores['titulo'])): ?>
+                <div class="text-danger"><?php echo htmlspecialchars($errores['titulo']); ?></div>
+            <?php endif; ?>
+          </div>
+          <div class="mb-3">
+            <label for="contenido" class="form-label">Contenido</label>
+            <textarea class="form-control" id="contenido" name="contenido" rows="3"></textarea>
+            <span id="contenidoError"></span>
+            <?php if (isset($errores['contenido'])): ?>
+                <div class="text-danger"><?php echo htmlspecialchars($errores['contenido']); ?></div>
+            <?php endif; ?>
+          </div>
+          <div class="mb-3">
+            <label for="archivoNota" class="form-label">O cargar desde archivo</label>
+            <input type="file" class="form-control" id="archivoNota" name="archivoNota" accept=".txt">
+          </div>
+          <input type="hidden" name="idUsuario" value="<?php echo htmlspecialchars($_SESSION['id']); ?>">
+          <button type="submit" class="btn btn-primary">Guardar Nota</button>
+        </form>
       </div>
     </div>
   </div>
+</div>
+
+
   
   <!-- Modal de confirmación de eliminación -->
   <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
@@ -272,7 +277,6 @@ session_start();
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
-  <!-- <script src="js/notas.js"></script> -->
   <script src="js/notas2.js"></script>
   </body>
   </html>
