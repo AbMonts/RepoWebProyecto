@@ -2,10 +2,6 @@
 session_start();
 require_once '../datos/DAOEventos.php';
 ?>
-<!-- filter_input: Se utiliza para validar y sanitizar los datos de entrada.
-FILTER_VALIDATE_INT: Se usa para validar que un ID es un entero válido.
-FILTER_SANITIZE_STRING: Se usa para limpiar cadenas de texto y evitar inyecciones de código. -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,17 +11,23 @@ FILTER_SANITIZE_STRING: Se usa para limpiar cadenas de texto y evitar inyeccione
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/estilos.css">
-    <link  href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <style>
+        .input-error {
+            border-color: red;
+        }
+        .text-danger {
+            font-size: 0.875em;
+        }
+    </style>
 </head>
 <body>
 <?php require("menuPrivado.php"); ?>
 
-<!-- Aqui esta la funcion que hace que el mensaje se quite despues de un tiempo y no se tnga que hacer manual recargando la pagina -->
 <div class="container mt-5">
     <h1 class="mb-4">Eventos del Usuario</h1>
    
-    
 <?php 
 if (!isset($_SESSION['id'])) {
     die("Acceso denegado.");
@@ -44,12 +46,11 @@ if (!$eventos) {
     $eventos = [];
 }
 
-//aqui verifica si se reciben dattos por el metodo post
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $mensaje = '';
     $tipo = '';
 
-    if (isset($_POST['eliminarEventoId'])) {//asi que verifica si se intenta elimninar
+    if (isset($_POST['eliminarEventoId'])) {
         $eventoId = filter_input(INPUT_POST, 'eliminarEventoId', FILTER_VALIDATE_INT);
         if ($eventoId) {
             $resultado = $dao->eliminar($eventoId);
@@ -66,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
       
     } 
-    if (isset($_POST['modificarEventoId'])) {//o editar
+    if (isset($_POST['modificarEventoId'])) {
         $eventoId = filter_input(INPUT_POST, 'modificarEventoId', FILTER_VALIDATE_INT);
         $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
         $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
@@ -90,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     } 
     
-    if (isset($_POST['agregarEvento'])) { //si no sera uno para agregar
+    if (isset($_POST['agregarEvento'])) {
         $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
         $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
         $fechainicio = filter_input(INPUT_POST, 'fechainicio', FILTER_SANITIZE_STRING);
@@ -135,7 +136,7 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
         if (alert) {
             setTimeout(function() {
                 alert.style.display = 'none';
-            }, 5000); // Ocultar el mensaje después de 5 segundos
+            }, 5000);
         }
     });
 </script>
@@ -172,19 +173,23 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
                 <form id="formAgregarEvento" method="post" action="">
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        <input type="text" class="form-control" id="titulo" name="titulo" >
+                        <span id="tituloError" class="invalid-feedback">El título es obligatorio y debe tener al menos 3 caracteres.</span>
                     </div>
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" ></textarea>
+                        <span id="descripcionError" class="invalid-feedback">La descripción es obligatoria y debe tener al menos 3 caracteres.</span>
                     </div>
                     <div class="mb-3">
                         <label for="fechainicio" class="form-label">Fecha de Inicio</label>
-                        <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio" required>
+                        <input type="datetime-local" class="form-control" id="fechainicio" name="fechainicio" >
+                        <span id="fechainicioError" class="invalid-feedback">La fecha de inicio es obligatoria.</span>
                     </div>
                     <div class="mb-3">
                         <label for="fechafin" class="form-label">Fecha de Fin</label>
-                        <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" required>
+                        <input type="datetime-local" class="form-control" id="fechafin" name="fechafin" >
+                        <span id="fechafinError" class="invalid-feedback">La fecha de fin es obligatoria y debe ser mayor o igual a la fecha de inicio.</span>
                     </div>
                     <input type="hidden" name="idUsuario" value="<?php echo $idUsuario; ?>">
                     <input type="hidden" name="agregarEvento" value="1">
@@ -231,19 +236,23 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
                     <input type="hidden" name="idUsuario" id="idUsuario" value="<?php echo $idUsuario; ?>">
                     <div class="mb-3">
                         <label for="modificarTitulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
+                        <input type="text" class="form-control" id="modificarTitulo" name="titulo" >
+                        <span id="modificarTituloError" class="invalid-feedback">El título es obligatorio y debe tener al menos 3 caracteres.</span>
                     </div>
                     <div class="mb-3">
                         <label for="modificarDescripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="modificarDescripcion" name="descripcion" rows="3"></textarea>
+                        <textarea class="form-control" id="modificarDescripcion" name="descripcion" rows="3" ></textarea>
+                        <span id="modificarDescripcionError" class="invalid-feedback">La descripción es obligatoria y debe tener al menos 3 caracteres.</span>
                     </div>
                     <div class="mb-3">
                         <label for="modificarFechaInicio" class="form-label">Fecha de Inicio</label>
-                        <input type="datetime-local" class="form-control" id="modificarFechaInicio" name="fechainicio" required>
+                        <input type="datetime-local" class="form-control" id="modificarFechaInicio" name="fechainicio" >
+                        <span id="modificarFechaInicioError" class="invalid-feedback">La fecha de inicio es obligatoria.</span>
                     </div>
                     <div class="mb-3">
                         <label for="modificarFechaFin" class="form-label">Fecha de Fin</label>
-                        <input type="datetime-local" class="form-control" id="modificarFechaFin" name="fechafin" required>
+                        <input type="datetime-local" class="form-control" id="modificarFechaFin" name="fechafin" >
+                        <span id="modificarFechaFinError" class="invalid-feedback">La fecha de fin es obligatoria y debe ser mayor o igual a la fecha de inicio.</span>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </form>
@@ -262,6 +271,8 @@ function modificarEvento(id, titulo, descripcion, fechainicio, fechafin) {
     const modificarFechaFinInput = document.getElementById('modificarFechaFin');
     const idUsuarioInput = document.getElementById('idUsuario');
 
+
+    
     modificarEventoIdInput.value = id;
     modificarTituloInput.value = titulo;
     modificarDescripcionInput.value = descripcion;
@@ -302,11 +313,61 @@ document.getElementById('formEliminarEvento').addEventListener('submit', functio
     cerrarModal('editModal');
     cerrarModal('confirmarEliminarModal');
 });
+
+document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
+    if (!validarFormulario('formAgregarEvento')) {
+        event.preventDefault();
+    }
+});
+
+document.getElementById('formModificarEvento').addEventListener('submit', function(event) {
+    if (!validarFormulario('formModificarEvento')) {
+        event.preventDefault();
+    }
+});
+
+function validarFormulario(formId) {
+    const form = document.getElementById(formId);
+    let isValid = true;
+
+    form.querySelectorAll('input, textarea').forEach(input => {
+        if (!input.checkValidity()) {
+            input.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+    });
+
+    const fechainicio = form.querySelector('#fechainicio') ? form.querySelector('#fechainicio').value : form.querySelector('#modificarFechaInicio').value;
+    const fechafin = form.querySelector('#fechafin') ? form.querySelector('#fechafin').value : form.querySelector('#modificarFechaFin').value;
+
+    if (new Date(fechainicio) > new Date(fechafin)) {
+        const fechaFinInput = form.querySelector('#fechafin') ? form.querySelector('#fechafin') : form.querySelector('#modificarFechaFin');
+        fechaFinInput.classList.add('is-invalid');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+document.querySelectorAll('input, textarea').forEach(input => {
+    input.addEventListener('input', () => {
+        if (input.checkValidity()) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+    });
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/eventos.js">
-   
+<script src="js/AgregarEventos.js"></script>
+<script src="js/eventos.js"></script>
 </body>
 </html>

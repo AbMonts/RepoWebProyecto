@@ -169,7 +169,7 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
           <form id="formAgregarNota" method="post" action="agregarNota.php" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="titulo" class="form-label">Título</label>
-              <input type="text" class="form-control" id="titulo" name="titulo" required>
+              <input type="text" class="form-control" id="titulo" name="titulo" >
             </div>
             <div class="mb-3">
               <label for="contenido" class="form-label">Contenido</label>
@@ -222,7 +222,7 @@ if (isset($_SESSION['mensaje']) && isset($_SESSION['tipo'])) {
             <input type="hidden" name="modificarNotaId" id="modificarNotaId">
             <div class="mb-3">
               <label for="modificarTitulo" class="form-label">Título</label>
-              <input type="text" class="form-control" id="modificarTitulo" name="titulo" required>
+              <input type="text" class="form-control" id="modificarTitulo" name="titulo" >
             </div>
             <div class="mb-3">
               <label for="modificarContenido" class="form-label">Contenido</label>

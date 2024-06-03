@@ -135,3 +135,143 @@ function validarModificarEvento() {
     return true;
 }
 
+
+// Función para validar formularios de eventos
+function validarFormulario(form) {
+    var isValid = true;
+
+    form.querySelectorAll('input, textarea').forEach(function(input) {
+        var errorElement = document.getElementById(input.id + 'Error');
+
+        if (input.id.includes('titulo') || input.id.includes('modificarTitulo')) {
+            if (input.value.trim().length <= 3) {
+                isValid = false;
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                errorElement.textContent = 'El título debe tener más de 3 caracteres.';
+                errorElement.style.display = 'block';
+            } else {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+                errorElement.style.display = 'none';
+            }
+        }
+
+        if (input.id.includes('descripcion') || input.id.includes('modificarDescripcion')) {
+            if (input.value.trim().length <= 3) {
+                isValid = false;
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                errorElement.textContent = 'La descripción debe tener más de 3 caracteres.';
+                errorElement.style.display = 'block';
+            } else {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+                errorElement.style.display = 'none';
+            }
+        }
+
+        if (input.id.includes('fechainicio') || input.id.includes('modificarFechaInicio')) {
+            if (input.value.trim() === '') {
+                isValid = false;
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                errorElement.textContent = 'La fecha de inicio es obligatoria.';
+                errorElement.style.display = 'block';
+            } else {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+                errorElement.style.display = 'none';
+            }
+        }
+
+        if (input.id.includes('fechafin') || input.id.includes('modificarFechaFin')) {
+            if (input.value.trim() === '') {
+                isValid = false;
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                errorElement.textContent = 'La fecha de fin es obligatoria.';
+                errorElement.style.display = 'block';
+            } else {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+                errorElement.style.display = 'none';
+            }
+        }
+    });
+
+    // Validar que la fecha de fin sea mayor o igual a la fecha de inicio
+    var fechainicio = form.querySelector('#fechainicio') ? form.querySelector('#fechainicio').value : form.querySelector('#modificarFechaInicio').value;
+    var fechafin = form.querySelector('#fechafin') ? form.querySelector('#fechafin').value : form.querySelector('#modificarFechaFin').value;
+
+    if (new Date(fechainicio) > new Date(fechafin)) {
+        var fechaFinInput = form.querySelector('#fechafin') ? form.querySelector('#fechafin') : form.querySelector('#modificarFechaFin');
+        var fechaFinError = document.getElementById(fechaFinInput.id + 'Error');
+        fechaFinInput.classList.add('is-invalid');
+        fechaFinInput.classList.remove('is-valid');
+        fechaFinError.textContent = 'La fecha de fin debe ser mayor o igual a la fecha de inicio.';
+        fechaFinError.style.display = 'block';
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+// Validar formulario de agregar evento
+document.getElementById('formAgregarEvento').addEventListener('submit', function(event) {
+    if (!validarFormulario(this)) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+});
+
+// Validar formulario de modificar evento
+document.getElementById('formModificarEvento').addEventListener('submit', function(event) {
+    if (!validarFormulario(this)) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+});
+
+// Función para mostrar el modal de confirmación de eliminación
+function confirmarEliminar() {
+    var eliminarEventoIdInput = document.getElementById('eliminarEventoId');
+    var modificarEventoIdInput = document.getElementById('modificarEventoId').value;
+    eliminarEventoIdInput.value = modificarEventoIdInput;
+    var confirmarEliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+    confirmarEliminarModal.show();
+}
+
+// Función para mostrar el modal de modificación con datos precargados
+function modificarEvento(id, titulo, descripcion, fechainicio, fechafin) {
+    document.getElementById('modificarEventoId').value = id;
+    document.getElementById('modificarTitulo').value = titulo;
+    document.getElementById('modificarDescripcion').value = descripcion;
+    document.getElementById('modificarFechaInicio').value = fechainicio;
+    document.getElementById('modificarFechaFin').value = fechafin;
+    var modificarModal = new bootstrap.Modal(document.getElementById('editModal'));
+    modificarModal.show();
+}
+
+document.querySelectorAll('.list-group-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+        var id = item.getAttribute('data-id');
+        var titulo = item.getAttribute('data-titulo');
+        var descripcion = item.getAttribute('data-descripcion');
+        var fechainicio = item.getAttribute('data-fechainicio');
+        var fechafin = item.getAttribute('data-fechafin');
+        modificarEvento(id, titulo, descripcion, fechainicio, fechafin);
+    });
+});
+
+// Función para cerrar un modal
+function cerrarModal(modalId) {
+    var modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.hide();
+}
+
+document.getElementById('formEliminarEvento').addEventListener('submit', function(event) {
+    cerrarModal('editModal');
+    cerrarModal('confirmarEliminarModal');
+});
+
