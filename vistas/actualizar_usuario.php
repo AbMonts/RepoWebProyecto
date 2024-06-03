@@ -47,9 +47,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errores['contrasena'] = "La contraseña debe tener al menos 6 caracteres.";
         }
 
-        // Verifica si el correo ya existe
+        // Verifica si el correo ya existe y no pertenece al usuario actual
         $dao = new DAOUsuario();
-        if ($dao->obtenerPorCorreo($correo)) {
+        $usuarioExistente = $dao->obtenerPorCorreo($correo);
+        if ($usuarioExistente && $usuarioExistente->id != $id) {
             $errores['correo'] = "El correo ya está en uso. Por favor, elige otro.";
         }
 
@@ -58,7 +59,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['data'] = $_POST;
             header("Location: EditarUsuario.php?id=" . htmlspecialchars($id));
             exit;
-        } else {
+        }
+
+
             $usuarioObj = new Usuario();
             $usuarioObj->id = $id;
             $usuarioObj->nombre = $nombre;
@@ -68,6 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $usuarioObj->rol = $rol;
             $usuarioObj->contrasena = $contrasena;
 
+            
+
             if ($dao->actualizar($usuarioObj)) {
                 $mensaje =  "Usuario actualizado exitosamente :D";
                 $tipo = 'success';
@@ -75,7 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $mensaje =  "Error al actualizar el usuario";
                 $tipo = 'error';
             }
-        }
+
+           
     } else {
         $mensaje =  "Faltan datos por llenar";
         $tipo = 'error';
